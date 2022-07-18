@@ -1,0 +1,7 @@
+.toast-open {
+  transform: translateY(0) translateX(-50%);
+}
+
+.toast-close {
+  transform: translateY(-200%) translateX(-50%);
+}

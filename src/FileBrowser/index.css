@@ -1,0 +1,78 @@
+.entries {
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+}
+
+/* Chrome, Safari and Opera */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+
+input[type="search"]::-webkit-search-cancel-button,
+input[type="search"]::-webkit-search-decoration {
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+:root {
+  --header-height: 54px;
+  --sidebar-width: clamp(250px, 20%, 350px);
+  --footer-height: 32px;
+  --details-width: clamp(280px, 25%, 400px);
+}
+
+.fb__header {
+  height: var(--header-height);
+}
+
+.fb__sidebar {
+  top: var(--header-height);
+  width: var(--sidebar-width);
+}
+
+.fb__footer {
+  height: var(--footer-height);
+  left: var(--sidebar-width);
+  transition: right 150ms;
+}
+
+.fb__footer.details-open {
+  right: var(--details-width);
+}
+
+.fb__footer.details-closed {
+  right: 0;
+}
+
+.fb__details {
+  top: var(--header-height);
+  width: var(--details-width);
+  transition: right 150ms;
+}
+
+.fb__details.details-open {
+  right: 0;
+}
+
+.fb__details.details-closed {
+  right: calc(-1 * var(--details-width));
+}
+
+.fb__main {
+  top: var(--header-height);
+  left: var(--sidebar-width);
+  bottom: var(--footer-height);
+  transition: right 150ms;
+}
+
+.fb__main.details-open {
+  right: var(--details-width);
+}
+
+.fb__main.details-closed {
+  right: 0;
+}

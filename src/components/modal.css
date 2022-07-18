@@ -1,0 +1,25 @@
+@keyframes modal-show {
+  from {
+    transform: translateY(150%);
+  }
+  to {
+    transform: translateY(-50%);
+  }
+}
+
+.modal {
+  animation: modal-show 300ms ease forwards;
+}
+
+@keyframes image-modal-show {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+.image-modal {
+  animation: image-modal-show 300ms ease forwards;
+}

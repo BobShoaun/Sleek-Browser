@@ -1,0 +1,9 @@
+.dropdown {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.dropdown-wrapper:focus-within .dropdown {
+  pointer-events: all;
+  opacity: 1;
+}
