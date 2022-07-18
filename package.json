@@ -8,6 +8,10 @@
     "build": "vite build",
     "preview": "vite preview"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/BobShoaun/Sleek-Browser.git"
+  },
   "dependencies": {
     "axios": "^0.27.2",
     "fuse.js": "^6.6.2",
