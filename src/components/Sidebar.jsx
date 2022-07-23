@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { getIconFromExtension } from "../helpers";
 import { Archive, Folder, ChevronRight, ChevronDown } from "react-feather";
 import path from "path";
@@ -13,25 +13,29 @@ const SidebarItem = ({
   const [childrenItems, setChildrenItems] = useState([]);
   const [isExpanded, setIsExpanded] = useState(false);
 
-  const expand = async () => {
-    if (item.isDirectory) {
-      const items = await onBrowse(item.path);
-      console.log(items);
-      setChildrenItems(items);
-      setIsExpanded(isExpanded => !isExpanded);
-    }
-  };
+  const getChildrenItems = useCallback(
+    async item => setChildrenItems(await onBrowse(item.path)),
+    [setChildrenItems, onBrowse]
+  );
+
+  useEffect(() => void getChildrenItems(item), [item]);
+
+  useEffect(() => {
+    if (!isExpanded) return;
+    getChildrenItems(item);
+  }, [isExpanded, item]);
 
   const Icon = item.isDirectory
     ? Folder
     : getIconFromExtension(path.extname(item.path));
+
   return (
     <section>
       <div className="flex items-center">
         <button
-          onClick={expand}
+          onClick={() => setIsExpanded(isExpanded => !isExpanded)}
           className={`${
-            item.isDirectory ? "" : "invisible"
+            item.isDirectory && childrenItems.length ? "" : "invisible"
           } text-gray-600 dark:text-gray-500 dark:hover:text-gray-100 py-1.5 px-1 ml-1 transition-colors`}
         >
           {isExpanded ? <ChevronDown size={15} /> : <ChevronRight size={15} />}
@@ -53,26 +57,28 @@ const SidebarItem = ({
           <p className="text-sm truncate">{path.basename(item.path) || "-"}</p>
         </button>
       </div>
-      {isExpanded && (
-        <div className="pl-4 my-0.5 relative">
-          <button
-            onClick={() => setIsExpanded(isExpanded => !isExpanded)}
-            className="absolute ml-2.5 px-1 top-0 bottom-0 left-0 group"
-          >
-            <div className="w-px h-full bg-gray-500 group-hover:bg-gray-100"></div>
-          </button>
-          <div className="space-y-0.5">
-            {childrenItems.map(item => (
-              <SidebarItem
-                item={item}
-                onNavigate={onNavigate}
-                onContextMenu={onContextMenu}
-                onBrowse={onBrowse}
-              />
-            ))}
-          </div>
+      <div
+        className={`${isExpanded ? "block" : "hidden"} pl-4 my-0.5 relative`}
+      >
+        <button
+          onClick={() => setIsExpanded(false)}
+          className="absolute ml-2.5 px-1 top-0 bottom-0 left-0 group"
+        >
+          <div className="w-px h-full bg-gray-500 group-hover:bg-gray-100" />
+        </button>
+        <div className="space-y-0.5">
+          {childrenItems.map(item => (
+            <SidebarItem
+              key={item.path}
+              item={item}
+              onNavigate={onNavigate}
+              onContextMenu={onContextMenu}
+              onBrowse={onBrowse}
+              onPreview={onPreview}
+            />
+          ))}
         </div>
-      )}
+      </div>
     </section>
   );
 };
@@ -106,10 +112,12 @@ const Sidebar = ({
       <div className="space-y-0.5">
         {rootItems.map(item => (
           <SidebarItem
+            key={item.path}
             item={item}
             onNavigate={onNavigate}
             onContextMenu={onContextMenu}
             onBrowse={onBrowse}
+            onPreview={onPreview}
           />
         ))}
       </div>

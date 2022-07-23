@@ -45,4 +45,8 @@ export const items = [
     lastModified: Date.now(),
     url: `https://bobng.me`,
   },
+  {
+    path: "/Documents/Foo/homework",
+    isDirectory: true,
+  },
 ];
