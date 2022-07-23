@@ -1,4 +1,6 @@
 import FileBrowser from "../FileBrowser";
+import path from "path";
+import { items } from "./files";
 
 const MainPage = () => {
   const fileSizeLimit = 25_000_000; // 25 MB
@@ -10,28 +12,27 @@ const MainPage = () => {
    * @param path must be absolute, eg hello/world.txt or hello/foo/ or hello/foo
    * @returns
    */
-  const getItems = async (path) => {
-    console.log(path);
+  const getItems = async (_path) => {
+    const i = items.filter(
+      (item) =>
+        path.dirname(item.path).toLocaleLowerCase() ===
+        _path.toLocaleLowerCase()
+    );
+
+    // console.log(i);
     // return [];
-    return getHomeItems();
+    return i;
   };
 
   const getHomeItems = async (_path) => {
-    return [
-      {
-        name: "Hello",
-        isDirectory: false,
-        size: 1000,
-        lastModified: Date.now(),
-        path: "Help/Me",
-        url: `https://s3.amazonaws.com/`,
-      },
-      {
-        name: "Foo",
-        isDirectory: true,
-        path: "Hello/world",
-      },
-    ];
+    // _path = "/";
+
+    // console.log(i);
+    // console.log(path.dirname("/hello"));
+    return i;
+
+    console.log(path.dirname("bar"));
+    return [];
   };
 
   const getArchivedItems = async () => {
@@ -54,7 +55,7 @@ const MainPage = () => {
       onUpload={uploadFile}
       onDelete={deleteFile}
       onDownload={downloadFile}
-      homePath="Home/"
+      homePath="/"
       canUpload={isHome}
       fileSizeLimit={fileSizeLimit}
     />

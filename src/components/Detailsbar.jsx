@@ -15,7 +15,7 @@ const Detailsbar = ({
 }) => {
   const [previewType, setPreviewType] = useState("none");
 
-  const extension = path.extname(file?.name);
+  const extension = path.extname(file?.path);
 
   const Icon = useMemo(() => getIconFromExtension(extension), [file]);
 
@@ -62,7 +62,7 @@ const Detailsbar = ({
           <img
             className="m-auto max-h-full rounded-sm "
             src={file.url}
-            alt={file.name}
+            alt={path.basename(file.path)}
             onError={() => setPreviewType("none")}
           />
         </div>
@@ -78,7 +78,7 @@ const Detailsbar = ({
               className="text-gray-600 dark:text-gray-300 text-right pl-2 py-2 font-medium break-all select-all"
               style={{ wordWrap: "break-word" }}
             >
-              {file.name}
+              {path.basename(file.path) || "-"}
             </td>
           </tr>
           <tr className="border-b-2 border-gray-300 dark:border-gray-500">
@@ -86,7 +86,7 @@ const Detailsbar = ({
               Type
             </td>
             <td className="text-gray-600 dark:text-gray-300 text-right pl-2 py-2 font-medium">
-              {path.extname(file.name) || "-"}
+              {path.extname(file.path) || "-"}
             </td>
           </tr>
 

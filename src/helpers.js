@@ -68,11 +68,20 @@ const codeExtensions = [
   "class",
   "swift",
 ];
-const archiveExtensions = ["zip", "7z", "tar.gz", "rar", "pkg", "z", "rpm"];
+const archiveExtensions = [
+  "zip",
+  "7z",
+  "tar.gz",
+  "rar",
+  "pkg",
+  "z",
+  "rpm",
+  "gz",
+];
 const discExtensions = ["iso", "dmg", "toast", "vcd"];
 const databaseExtensions = ["csv", "dat", "mdb", "sql", "tar"];
 
-export const getIconFromExtension = extension => {
+export const getIconFromExtension = (extension) => {
   const ext = extension.replace(/^\./, "").toLocaleLowerCase();
   if (textExtensions.includes(ext)) return FileText;
   if (imageExtensions.includes(ext)) return Image;
@@ -85,12 +94,12 @@ export const getIconFromExtension = extension => {
   return File;
 };
 
-export const isImage = extension => {
+export const isImage = (extension) => {
   const ext = extension.replace(/^\./, "").toLocaleLowerCase();
   return imageExtensions.includes(ext);
 };
 
-export const isVideo = extension => {
+export const isVideo = (extension) => {
   const ext = extension.replace(/^\./, "").toLocaleLowerCase();
   return videoExtensions.includes(ext);
 };

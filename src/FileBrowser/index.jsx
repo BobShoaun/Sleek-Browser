@@ -90,7 +90,7 @@ const FileBrowser = ({
     const items = [...currentItems].sort((a, b) => {
       switch (sortField) {
         case "name":
-          return a.name.localeCompare(b.name);
+          return path.basename(a.path).localeCompare(path.basename(b.path));
         case "date":
           return moment(a.lastModified).diff(b.lastModified);
         case "type":
@@ -110,7 +110,7 @@ const FileBrowser = ({
   }, [currentItems]);
 
   // sets current path directly, not interacting with path history
-  const _setCurrentPath = async (path) => {
+  const _setCurrentPath = async path => {
     setIsLoading(true);
     const pathItems = await onBrowse(path);
     setCurrentPath(path);
@@ -119,12 +119,12 @@ const FileBrowser = ({
     return pathItems;
   };
 
-  const navigate = async (path) => {
+  const navigate = async path => {
     if (currentPath !== path) {
-      setBackwardPaths((paths) => [...paths, currentPath]); // push to back stack
+      setBackwardPaths(paths => [...paths, currentPath]); // push to back stack
       setForwardPaths([]);
     }
-    history(`/${path}`);
+    history(path);
     setSearchQuery(""); // clear search box
     return await _setCurrentPath(path);
   };
@@ -136,21 +136,20 @@ const FileBrowser = ({
 
   // load root path for sidebar, without navigating to it
   const loadRoot = async () => {
-    const rootItems = await onBrowse(homePath);
+    const rootItems = await onBrowse("/");
     setRootItems(rootItems);
   };
 
   const initialize = useCallback(async () => {
     await loadRoot();
-    const _path = location.pathname.replace(/^\//, "");
-    navigate(_path || homePath); // if no path specified, go to homepath
+    navigate(location.pathname || "/"); // if no path specified, go to homepath
   }, [history]);
 
   useEffect(() => {
     initialize();
   }, []);
 
-  const uploadFiles = async (files) => {
+  const uploadFiles = async files => {
     for (const file of files) {
       console.log("uploading", file);
       const _path = path.join(currentPath, file.path);
@@ -159,7 +158,7 @@ const FileBrowser = ({
     refresh();
   };
 
-  const uploadNewFolder = async (name) => {
+  const uploadNewFolder = async name => {
     const file = new File([], name); // empty file for creating directory
     const _path = path.join(currentPath, name, file.name);
     await onUpload(file, _path);
@@ -167,13 +166,13 @@ const FileBrowser = ({
     setShowNewFolder(false);
   };
 
-  const deleteFile = async (_path) => {
+  const deleteFile = async _path => {
     await onDelete(_path);
     refresh();
     setDetailsOpen(false);
   };
 
-  const deleteFolder = async (_path) => {
+  const deleteFolder = async _path => {
     // check if folder is empty
     const items = await onBrowse(_path);
     if (items.length > 0) {
@@ -192,32 +191,32 @@ const FileBrowser = ({
 
   const goBack = () => {
     const previousPath = backwardPaths[backwardPaths.length - 1];
-    setBackwardPaths((paths) => {
+    setBackwardPaths(paths => {
       // pop previous path from backwardPaths
       const pathsCpy = [...paths];
       pathsCpy.pop();
       return pathsCpy;
     });
-    setForwardPaths((paths) => [...paths, currentPath]); // push currentPath to forwardPaths
+    setForwardPaths(paths => [...paths, currentPath]); // push currentPath to forwardPaths
     _setCurrentPath(previousPath);
   };
 
   const goForward = () => {
     const nextPath = forwardPaths[forwardPaths.length - 1];
-    setForwardPaths((paths) => {
+    setForwardPaths(paths => {
       // pop path
       const pathsCpy = [...paths];
       pathsCpy.pop();
       return pathsCpy;
     });
-    setBackwardPaths((paths) => [...paths, currentPath]); // push currentPath
+    setBackwardPaths(paths => [...paths, currentPath]); // push currentPath
     _setCurrentPath(nextPath);
   };
 
-  const search = (query) => {
-    const fuse = new Fuse(currentItems, { keys: ["name"] });
+  const search = query => {
+    const fuse = new Fuse(currentItems, { keys: ["path"] });
     const filtered = query
-      ? fuse.search(query).map((res) => res.item)
+      ? fuse.search(query).map(res => res.item)
       : currentItems;
     setFilteredItems(filtered);
   };
@@ -228,7 +227,7 @@ const FileBrowser = ({
     setCtShow(true);
   };
 
-  const copyUrl = (file) => {
+  const copyUrl = file => {
     navigator.clipboard.writeText(file.url);
     setToastMessage(`Copied URL to clipboard.`);
     setToastOpen(true);
@@ -277,7 +276,7 @@ const FileBrowser = ({
         {showImgModal && (
           <ImageModal
             src={previewFile.url}
-            alt={previewFile.name}
+            alt={path.basename(previewFile.path)}
             onClose={() => setShowImgModal(false)}
           />
         )}
@@ -288,7 +287,7 @@ const FileBrowser = ({
           show={ctShow}
           item={ctItem}
           onDownload={onDownload}
-          onToast={(message) => (setToastMessage(message), setToastOpen(true))}
+          onToast={message => (setToastMessage(message), setToastOpen(true))}
           onDeleteFile={() => setDeletingFile(ctItem)}
           onDeleteFolder={deleteFolder}
           canUpload={canUpload(currentPath)}
@@ -305,7 +304,7 @@ const FileBrowser = ({
           <Toolbar
             backwardPaths={backwardPaths}
             forwardPaths={forwardPaths}
-            onHome={() => navigate(homePath)}
+            onHome={() => navigate("/")}
             onNewFolder={() => setShowNewFolder(true)}
             onUpload={() => setShowUploadModal(true)}
             onNavigate={navigate}
@@ -321,7 +320,7 @@ const FileBrowser = ({
           <Sidebar
             rootItems={rootItems}
             onNavigate={navigate}
-            onPreview={(file) => (setPreviewFile(file), setDetailsOpen(true))}
+            onPreview={file => (setPreviewFile(file), setDetailsOpen(true))}
             onArchive={() => navigate("Archive/")}
             onContextMenu={openContextMenu}
           />
@@ -331,7 +330,7 @@ const FileBrowser = ({
           className={`fb__main ${
             detailsOpen ? "details-open" : "details-closed"
           } absolute z-0 overflow-auto bg-gray-100 dark:bg-gray-900`}
-          onContextMenu={(e) => {
+          onContextMenu={e => {
             e.preventDefault();
             openContextMenu(null, e.pageX, e.pageY);
           }}
@@ -346,7 +345,7 @@ const FileBrowser = ({
               currentItems={filteredItems}
               showNewFolder={showNewFolder}
               onNavigate={navigate}
-              onPreview={(file) => (setPreviewFile(file), setDetailsOpen(true))}
+              onPreview={file => (setPreviewFile(file), setDetailsOpen(true))}
               onCreateFolder={uploadNewFolder}
               onContextMenu={openContextMenu}
               onCopyUrl={copyUrl}
@@ -355,7 +354,7 @@ const FileBrowser = ({
             <ListView
               showNewFolder={showNewFolder}
               onNavigate={navigate}
-              onPreview={(file) => (setPreviewFile(file), setDetailsOpen(true))}
+              onPreview={file => (setPreviewFile(file), setDetailsOpen(true))}
               onCreateFolder={uploadNewFolder}
               onContextMenu={openContextMenu}
               onCopyUrl={copyUrl}
@@ -381,7 +380,7 @@ const FileBrowser = ({
               file={previewFile}
               onDelete={() => setDeletingFile(previewFile)}
               onClose={() => setDetailsOpen(false)}
-              onToast={(message) => (
+              onToast={message => (
                 setToastMessage(message), setToastOpen(true)
               )}
               onDownload={onDownload}

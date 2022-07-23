@@ -11,7 +11,7 @@ const Sidebar = ({
 }) => {
   return (
     <aside className="py-5 px-3 -border-r border-gray-300 dark:border-gray-600">
-      <h4 className="text-gray-400 pl-2 mb-1 font-bold text-sm">Archive</h4>
+      <h4 className="text-gray-400 pl-2 mb-1 font-bold text-sm">Favorites</h4>
       <button
         title={"Archive"}
         key={"Archive"}
@@ -31,10 +31,10 @@ const Sidebar = ({
         {rootItems.map(item => {
           const Icon = item.isDirectory
             ? Folder
-            : getIconFromExtension(path.extname(item.name));
+            : getIconFromExtension(path.extname(item.path));
           return (
             <button
-              title={item.name}
+              title={path.basename(item.path)}
               key={item.path}
               onClick={() =>
                 item.isDirectory ? onNavigate(item.path) : onPreview(item)
@@ -44,13 +44,13 @@ const Sidebar = ({
                 e.stopPropagation();
                 onContextMenu(item, e.pageX, e.pageY);
               }}
-              className="w-full flex items-center gap-3 rounded-sm hover:bg-gray-300 focus:bg-gray-300 dark:hover:bg-gray-700 dark:focus:bg-gray-700 py-1.5 px-3"
+              className="flex items-center gap-3 rounded-sm hover:bg-gray-300 focus:bg-gray-300 dark:hover:bg-gray-700 dark:focus:bg-gray-700 py-1.5 pr-3 pl-7 w-full"
             >
               <div className="flex-shrink-0 text-gray-600 dark:text-gray-200">
                 <Icon className="" size={15} />
               </div>
               <p className="text-gray-600 dark:text-gray-200 text-sm text-left truncate">
-                {item.name || "-"}
+                {path.basename(item.path) || "-"}
               </p>
             </button>
           );

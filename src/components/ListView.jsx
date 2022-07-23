@@ -16,13 +16,14 @@ const ListView = ({
   onCopyUrl,
 }) => {
   const selectionMode = false;
+  const chevronSize = 13;
   const { filteredItems, sortField, setSortField, sortOrder, setSortOrder } =
     useContext(FileBrowserContext);
 
   const newFolderInput = useRef(null);
   const [selectedIndex, setSelectedIndex] = useState(-1);
 
-  const setSortFieldOrder = (field) => {
+  const setSortFieldOrder = field => {
     setSortOrder(
       sortField !== field ? "asc" : sortOrder === "asc" ? "desc" : "asc"
     );
@@ -42,16 +43,16 @@ const ListView = ({
               <p>Name</p>
               <div className="ml-auto pl-2">
                 <ChevronUp
-                  size={10}
-                  className={`-mb-0.5 ${
+                  size={chevronSize}
+                  className={`-mb-1 ${
                     sortField === "name" && sortOrder === "asc"
                       ? "text-gray-800 dark:text-gray-100"
                       : "text-gray-400 dark:text-gray-600"
                   }`}
                 />
                 <ChevronDown
-                  size={10}
-                  className={`-mt-0.5 ${
+                  size={chevronSize}
+                  className={`-mt-1 ${
                     sortField === "name" && sortOrder === "desc"
                       ? "text-gray-800 dark:text-gray-100"
                       : "text-gray-400 dark:text-gray-600"
@@ -68,16 +69,16 @@ const ListView = ({
               <p>Date Modified</p>
               <div className="ml-auto pl-2">
                 <ChevronUp
-                  size={10}
-                  className={`-mb-0.5 ${
+                  size={chevronSize}
+                  className={`-mb-1 ${
                     sortField === "date" && sortOrder === "asc"
                       ? "text-gray-800 dark:text-gray-100"
                       : "text-gray-400 dark:text-gray-600"
                   }`}
                 />
                 <ChevronDown
-                  size={10}
-                  className={`-mt-0.5 ${
+                  size={chevronSize}
+                  className={`-mt-1 ${
                     sortField === "date" && sortOrder === "desc"
                       ? "text-gray-800 dark:text-gray-100"
                       : "text-gray-400 dark:text-gray-600"
@@ -95,16 +96,16 @@ const ListView = ({
               <p>Type</p>
               <div className="ml-auto pl-2">
                 <ChevronUp
-                  size={10}
-                  className={`-mb-0.5 ${
+                  size={chevronSize}
+                  className={`-mb-1 ${
                     sortField === "type" && sortOrder === "asc"
                       ? "text-gray-800 dark:text-gray-100"
                       : "text-gray-400 dark:text-gray-600"
                   }`}
                 />
                 <ChevronDown
-                  size={10}
-                  className={`-mt-0.5 ${
+                  size={chevronSize}
+                  className={`-mt-1 ${
                     sortField === "type" && sortOrder === "desc"
                       ? "text-gray-800 dark:text-gray-100"
                       : "text-gray-400 dark:text-gray-600"
@@ -122,16 +123,16 @@ const ListView = ({
               <p>Size</p>
               <div className="ml-auto pl-2">
                 <ChevronUp
-                  size={10}
-                  className={`-mb-0.5 ${
+                  size={chevronSize}
+                  className={`-mb-1 ${
                     sortField === "size" && sortOrder === "asc"
                       ? "text-gray-800 dark:text-gray-100"
                       : "text-gray-400 dark:text-gray-600"
                   }`}
                 />
                 <ChevronDown
-                  size={10}
-                  className={`-mt-0.5 ${
+                  size={chevronSize}
+                  className={`-mt-1 ${
                     sortField === "size" && sortOrder === "desc"
                       ? "text-gray-800 dark:text-gray-100"
                       : "text-gray-400 dark:text-gray-600"
@@ -146,11 +147,11 @@ const ListView = ({
         {filteredItems.map((item, index) => {
           const Icon = item.isDirectory
             ? Folder
-            : getIconFromExtension(path.extname(item.name));
+            : getIconFromExtension(path.extname(item.path));
           return (
             <tr
-              title={item.name}
-              key={item.name}
+              title={path.basename(item.path)}
+              key={item.path}
               tabIndex={index}
               onDoubleClick={() => item.isDirectory && onNavigate(item.path)}
               onClick={() => {
@@ -158,7 +159,7 @@ const ListView = ({
                 if (item.isDirectory) return;
                 selectionMode ? onCopyUrl(item) : onPreview(item);
               }}
-              onContextMenu={(e) => {
+              onContextMenu={e => {
                 e.preventDefault();
                 e.stopPropagation();
                 onContextMenu(item, e.pageX, e.pageY);
@@ -175,7 +176,7 @@ const ListView = ({
                 className="px-3 py-1 text-gray-900 dark:text-gray-200 whitespace-nowrap overflow-ellipsis overflow-hidden select-none"
                 style={{ maxWidth: "26rem" }}
               >
-                {item.name || " -"}
+                {path.basename(item.path) || " -"}
               </td>
               <td className="px-3 py-1 text-gray-500 dark:text-gray-400 whitespace-nowrap">
                 {item.isDirectory
@@ -188,7 +189,7 @@ const ListView = ({
                   : path.extname(item.path) || "file"}
               </td>
               <td className="px-3 py-1 text-gray-500 dark:text-gray-400 whitespace-nowrap">
-                {item.isDirectory ? " -" : formatBytes(parseInt(item.size))}
+                {item.isDirectory ? "-" : formatBytes(parseInt(item.size))}
               </td>
             </tr>
           );
@@ -203,7 +204,7 @@ const ListView = ({
             </td>
             <td className="px-3 py-1 text-gray-900 dark:text-gray-100">
               <form
-                onSubmit={(e) => {
+                onSubmit={e => {
                   e.preventDefault();
                   onCreateFolder(newFolderInput.current.value);
                 }}
@@ -214,7 +215,7 @@ const ListView = ({
                   type="text"
                   defaultValue="New folder"
                   onBlur={() => onCreateFolder(newFolderInput.current.value)}
-                  onFocus={(e) => e.target.select()}
+                  onFocus={e => e.target.select()}
                   className="w-full px-2 border-2 border-gray-500 rounded-sm text-sm bg-gray-100 dark:bg-gray-800"
                 />
               </form>
