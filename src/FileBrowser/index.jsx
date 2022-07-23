@@ -323,6 +323,7 @@ const FileBrowser = ({
             onPreview={file => (setPreviewFile(file), setDetailsOpen(true))}
             onArchive={() => navigate("Archive/")}
             onContextMenu={openContextMenu}
+            onBrowse={onBrowse}
           />
         </aside>
 
