@@ -13,6 +13,9 @@ import {
   Grid,
   ChevronRight,
   RefreshCw,
+  Scissors,
+  Clipboard,
+  Edit,
 } from "react-feather";
 import RadioButton from "./RadioButton";
 import { FileBrowserContext } from "../FileBrowser";
@@ -202,19 +205,58 @@ const ContextMenu = ({
           <>
             <li>
               <button
-                onClick={copyPath}
+                onClick={() => onClose()}
                 className="list-button flex items-center"
               >
-                <Link size={13} /> <p>Copy Path</p>
+                <Copy size={13} />
+                <p>Copy</p>
               </button>
             </li>
             <li>
               <button
-                // disabled
+                onClick={() => onClose()}
+                className="list-button flex items-center"
+              >
+                <Scissors size={13} />
+                <p>Cut</p>
+              </button>
+            </li>
+            <li>
+              <button
+                onClick={() => onClose()}
+                className="list-button flex items-center"
+              >
+                <Clipboard size={13} />
+                <p>Paste</p>
+              </button>
+            </li>
+            <li>
+              <button
+                onClick={copyPath}
+                className="list-button flex items-center"
+              >
+                <Link size={13} />
+                <p>Copy Path</p>
+              </button>
+            </li>
+            <hr className="my-2 dark:border-gray-500" />
+            <li>
+              <button
+                onClick={() => onClose()}
+                className="list-button flex items-center"
+              >
+                <Edit size={13} />
+                <p>Rename</p>
+              </button>
+            </li>
+
+            <li>
+              <button
                 onClick={() => (onClose(), onDeleteFolder(item.path))}
                 className="list-button disabled:cursor-not-allowed flex items-center"
               >
-                <Trash2 size={13} /> <p>Delete</p>
+                <Trash2 size={13} />
+                <p>Delete</p>
               </button>
             </li>
           </>
@@ -227,7 +269,8 @@ const ContextMenu = ({
                 onClick={() => (onClose(), onDownload(item))}
                 className="list-button flex items-center"
               >
-                <Download size={13} /> <p>Download</p>
+                <Download size={13} />
+                <p>Download</p>
               </button>
             </li>
             <li>
@@ -235,7 +278,8 @@ const ContextMenu = ({
                 onClick={copyUrl}
                 className="list-button flex items-center"
               >
-                <Link size={13} /> <p>Copy URL</p>
+                <Link size={13} />
+                <p>Copy URL</p>
               </button>
             </li>
             <li>
@@ -243,7 +287,8 @@ const ContextMenu = ({
                 onClick={() => (onClose(), onDeleteFile(item))}
                 className="list-button flex items-center"
               >
-                <Trash2 size={13} /> <p>Delete</p>
+                <Trash2 size={13} />
+                <p>Delete</p>
               </button>
             </li>
           </>

@@ -142,12 +142,12 @@ const Toolbar = ({
               className="flex items-center no-scrollbar overflow-auto my-auto px-5 w-full"
             >
               <>
-                <span
+                <button
                   onClick={() => onNavigate("/")}
                   className="hover:underline cursor-pointer whitespace-nowrap flex-shrink-0"
                 >
                   Home
-                </span>
+                </button>
                 <ChevronRight
                   size={15}
                   className="mx-1.5 whitespace-nowrap flex-shrink-0 last:hidden"
@@ -155,7 +155,7 @@ const Toolbar = ({
               </>
               {pathEntries.map((entry, index) => (
                 <Fragment key={index}>
-                  <span
+                  <button
                     onClick={() =>
                       onNavigate(
                         `/${pathEntries.slice(0, index + 1).join("/")}`
@@ -164,7 +164,7 @@ const Toolbar = ({
                     className="hover:underline cursor-pointer whitespace-nowrap flex-shrink-0"
                   >
                     {entry}
-                  </span>
+                  </button>
                   <ChevronRight
                     size={15}
                     className="mx-1.5 whitespace-nowrap flex-shrink-0 last:hidden"
@@ -268,19 +268,20 @@ const Toolbar = ({
           className="toolbar-button outline-none w-full h-full pl-9 pr-2 transition-colors"
           autoFocus
           placeholder="Search within directory..."
+          autoComplete="on"
           value={searchQuery}
           onChange={e => setSearchQuery(e.target.value)}
         />
         {searchQuery && (
-          <X
+          <button
             onClick={() => {
               setSearchQuery("");
               onSearch("");
             }}
             className="absolute cursor-pointer top-1/2 right-2.5 transform -translate-y-1/2 bg-gray-400 bg-opacity-80 text-white p-0.5 rounded-full"
-            size={13}
-            strokeWidth={4}
-          />
+          >
+            <X size={10} strokeWidth={4} />
+          </button>
         )}
       </form>
 

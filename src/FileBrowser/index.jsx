@@ -366,7 +366,7 @@ const FileBrowser = ({
 
         <aside
           style={{ width: sidebarWidth }}
-          className="fb__sidebar absolute left-0 bottom-0 overflow-visible z-10 shadow-lg border-r border-gray-300 dark:border-gray-600 bg-gray-200 dark:bg-gray-800"
+          className="fb__sidebar absolute left-0 bottom-0 z-10 shadow-lg border-r border-gray-300 dark:border-gray-600 bg-gray-200 dark:bg-gray-800"
         >
           <div
             ref={sidebarResizeHandleRef}
@@ -438,7 +438,7 @@ const FileBrowser = ({
         </footer>
 
         <aside
-          className={`fb__details absolute bottom-0 overflow-visible z-10 transition-[right,visibility] bg-gray-100 dark:bg-gray-900 border-l border-gray-300 dark:border-gray-600 shadow-lg`}
+          className={`fb__details absolute bottom-0 z-10 transition-[right,visibility] bg-gray-100 dark:bg-gray-900 border-l border-gray-300 dark:border-gray-600 shadow-lg`}
           style={{
             width: detailsWidth,
             right: isDetailsOpen ? 0 : `calc(-1 * ${detailsWidth})`,

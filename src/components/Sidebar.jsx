@@ -13,6 +13,7 @@ import {
   Home,
   Star,
   Clock,
+  Trash2,
 } from "react-feather";
 import path from "path";
 
@@ -126,7 +127,7 @@ const Sidebar = ({
   onBrowse,
 }) => {
   return (
-    <div className="py-5 px-3">
+    <div className="py-5 px-3 overflow-y-auto h-full">
       <div className="mb-2">
         <button
           title="Recents"
@@ -170,13 +171,24 @@ const Sidebar = ({
         ))}
       </div>
 
+      <div className="mb-2">
+        <button
+          title="Archived"
+          onClick={() => onNavigate("/")}
+          className="mb-1 flex items-center w-full overflow-hidden font-bold gap-2.5 px-2 rounded-sm text-gray-500 dark:text-gray-400 hover:bg-gray-300 focus:bg-gray-300 dark:hover:bg-gray-700 dark:focus:bg-gray-700 py-1.5"
+        >
+          <Archive className="flex-shrink-0" size={15} />
+          <p className="text-sm truncate">Archived</p>
+        </button>
+      </div>
+
       <button
         title="Archived"
         onClick={() => onNavigate("/")}
         className="mb-1 flex items-center w-full overflow-hidden font-bold gap-2.5 px-2 rounded-sm text-gray-500 dark:text-gray-400 hover:bg-gray-300 focus:bg-gray-300 dark:hover:bg-gray-700 dark:focus:bg-gray-700 py-1.5"
       >
-        <Archive className="flex-shrink-0" size={15} />
-        <p className="text-sm truncate">Archived</p>
+        <Trash2 className="flex-shrink-0" size={15} />
+        <p className="text-sm truncate">Trash</p>
       </button>
     </div>
   );
