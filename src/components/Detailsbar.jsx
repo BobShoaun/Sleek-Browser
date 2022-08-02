@@ -33,16 +33,14 @@ const Detailsbar = ({
   };
 
   return (
-    <aside className="p-5 pb-8 text-center dark:border-gray-600">
-      <div className="text-left sticky top-3">
-        <button
-          title="Close detailed view panel"
-          onClick={onClose}
-          className="bg-transparent hover:bg-gray-200 dark:hover:bg-gray-800 px-2 py-2 rounded-sm transition-colors"
-        >
-          <X className="text-gray-700 dark:text-gray-200" size={15} />
-        </button>
-      </div>
+    <aside className="p-5 dark:border-gray-600 overflow-y-auto h-full">
+      <button
+        title="Close detailed view panel"
+        onClick={onClose}
+        className="sticky top-0 bg-transparent hover:bg-gray-200 dark:hover:bg-gray-800 px-2 py-2 rounded-sm transition-colors"
+      >
+        <X className="text-gray-700 dark:text-gray-200" size={15} />
+      </button>
 
       {previewType === "none" ? (
         <Icon

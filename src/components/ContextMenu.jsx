@@ -13,6 +13,9 @@ import {
   Grid,
   ChevronRight,
   RefreshCw,
+  Scissors,
+  Clipboard,
+  Edit,
 } from "react-feather";
 import RadioButton from "./RadioButton";
 import { FileBrowserContext } from "../FileBrowser";
@@ -80,8 +83,10 @@ const ContextMenu = ({
                 <ChevronRight className="ml-auto" size={15} />
               </button>
               <ul
-                className="group-hover:opacity-100 group-hover:z-50 opacity-0 absolute top-0 left-full space-y-1 bg-gray-100 dark:bg-gray-800 text-sm text-gray-700 dark:text-gray-100 shadow-lg p-1 transition-opacity"
-                style={{ minWidth: "8em" }}
+                className={`group-focus-within:opacity-100 group-focus-within:pointer-events-auto 
+                group-hover:opacity-100 group-hover:pointer-events-auto pointer-events-none opacity-0 
+                absolute min-w-[8em] top-0 left-full space-y-1 bg-gray-100 dark:bg-gray-800 text-sm 
+                text-gray-700 dark:text-gray-100 shadow-lg p-1 transition-opacity`}
               >
                 <li>
                   <button
@@ -103,64 +108,67 @@ const ContextMenu = ({
             </li>
             <li className="group relative">
               <button className="list-button flex items-center">
-                <BarChart size={13} /> <p>Sort</p>{" "}
+                <BarChart size={13} /> <p>Sort</p>
                 <ChevronRight className="ml-auto" size={15} />
               </button>
-              <ul
-                className="group-hover:opacity-100 group-hover:z-50 opacity-0 absolute top-0 left-full space-y-1 bg-gray-100 dark:bg-gray-800 text-sm text-gray-700 dark:text-gray-100 shadow-lg p-1 transition-opacity"
-                style={{ minWidth: "8em" }}
+              <div
+                tabIndex={1}
+                className={`group-focus-within:opacity-100 group-focus-within:pointer-events-auto 
+                group-hover:opacity-100 group-hover:pointer-events-auto pointer-events-none opacity-0 
+                absolute top-0 left-full space-y-1 bg-gray-100 dark:bg-gray-800 text-sm text-gray-700 
+                dark:text-gray-100 shadow-lg p-1 transition-opacity`}
               >
-                <li>
+                <fieldset>
+                  <legend className="sr-only">Sort Field</legend>
                   <RadioButton
                     onChange={setSortField}
                     field={sortField}
                     value="name"
                     title="Name"
+                    name="sort-field-2"
                   />
-                </li>
-                <li>
                   <RadioButton
                     onChange={setSortField}
                     field={sortField}
                     value="date"
-                    title="Last Modified"
+                    title="Date Modified"
+                    name="sort-field-2"
                   />
-                </li>
-                <li>
                   <RadioButton
                     onChange={setSortField}
                     field={sortField}
                     value="type"
                     title="Type"
+                    name="sort-field-2"
                   />
-                </li>
-                <li>
                   <RadioButton
                     onChange={setSortField}
                     field={sortField}
                     value="size"
                     title="Size"
+                    name="sort-field-2"
                   />
-                </li>
-                <hr className="my-1 dark:border-gray-500" />
+                </fieldset>
+                <hr className="my-2 dark:border-gray-700" role="none" />
 
-                <li>
+                <fieldset>
+                  <legend className="sr-only">Sort Order</legend>
                   <RadioButton
                     onChange={setSortOrder}
                     field={sortOrder}
                     value="asc"
                     title="Ascending"
+                    name="sort-order-2"
                   />
-                </li>
-                <li>
                   <RadioButton
                     onChange={setSortOrder}
                     field={sortOrder}
                     value="desc"
                     title="Descending"
+                    name="sort-order-2"
                   />
-                </li>
-              </ul>
+                </fieldset>
+              </div>
             </li>
             <li>
               <button
@@ -197,19 +205,58 @@ const ContextMenu = ({
           <>
             <li>
               <button
-                onClick={copyPath}
+                onClick={() => onClose()}
                 className="list-button flex items-center"
               >
-                <Link size={13} /> <p>Copy Path</p>
+                <Copy size={13} />
+                <p>Copy</p>
               </button>
             </li>
             <li>
               <button
-                // disabled
+                onClick={() => onClose()}
+                className="list-button flex items-center"
+              >
+                <Scissors size={13} />
+                <p>Cut</p>
+              </button>
+            </li>
+            <li>
+              <button
+                onClick={() => onClose()}
+                className="list-button flex items-center"
+              >
+                <Clipboard size={13} />
+                <p>Paste</p>
+              </button>
+            </li>
+            <li>
+              <button
+                onClick={copyPath}
+                className="list-button flex items-center"
+              >
+                <Link size={13} />
+                <p>Copy Path</p>
+              </button>
+            </li>
+            <hr className="my-2 dark:border-gray-500" />
+            <li>
+              <button
+                onClick={() => onClose()}
+                className="list-button flex items-center"
+              >
+                <Edit size={13} />
+                <p>Rename</p>
+              </button>
+            </li>
+
+            <li>
+              <button
                 onClick={() => (onClose(), onDeleteFolder(item.path))}
                 className="list-button disabled:cursor-not-allowed flex items-center"
               >
-                <Trash2 size={13} /> <p>Delete</p>
+                <Trash2 size={13} />
+                <p>Delete</p>
               </button>
             </li>
           </>
@@ -222,7 +269,8 @@ const ContextMenu = ({
                 onClick={() => (onClose(), onDownload(item))}
                 className="list-button flex items-center"
               >
-                <Download size={13} /> <p>Download</p>
+                <Download size={13} />
+                <p>Download</p>
               </button>
             </li>
             <li>
@@ -230,7 +278,8 @@ const ContextMenu = ({
                 onClick={copyUrl}
                 className="list-button flex items-center"
               >
-                <Link size={13} /> <p>Copy URL</p>
+                <Link size={13} />
+                <p>Copy URL</p>
               </button>
             </li>
             <li>
@@ -238,7 +287,8 @@ const ContextMenu = ({
                 onClick={() => (onClose(), onDeleteFile(item))}
                 className="list-button flex items-center"
               >
-                <Trash2 size={13} /> <p>Delete</p>
+                <Trash2 size={13} />
+                <p>Delete</p>
               </button>
             </li>
           </>
