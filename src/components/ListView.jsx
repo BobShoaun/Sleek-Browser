@@ -4,8 +4,34 @@ import moment from "moment";
 import path from "path";
 import { Folder, ChevronUp, ChevronDown } from "react-feather";
 import { getIconFromExtension } from "../helpers";
-import { AppContext } from "../App";
 import { FileBrowserContext } from "../FileBrowser";
+
+const ListViewTableHeading = ({
+  fieldName,
+  fieldDisplay,
+  sortField,
+  sortOrder,
+  setSortFieldOrder,
+}) => (
+  <th
+    onClick={() => setSortFieldOrder(fieldName)}
+    className="px-3 py-2 cursor-pointer hover:bg-gray-300 dark:hover:bg-gray-700"
+  >
+    <div className="flex items-center font-medium">
+      <p>{fieldDisplay}</p>
+      <div
+        className="ml-auto pl-2 text-gray-700 dark:text-gray-300"
+        style={{ visibility: sortField === fieldName ? "visible" : "hidden" }}
+      >
+        {sortOrder === "asc" ? (
+          <ChevronUp size={15} />
+        ) : (
+          <ChevronDown size={15} />
+        )}
+      </div>
+    </div>
+  </th>
+);
 
 const ListView = ({
   showNewFolder,
@@ -15,8 +41,6 @@ const ListView = ({
   onContextMenu,
   onCopyUrl,
 }) => {
-  const selectionMode = false;
-  const chevronSize = 13;
   const { filteredItems, sortField, setSortField, sortOrder, setSortOrder } =
     useContext(FileBrowserContext);
 
@@ -35,112 +59,36 @@ const ListView = ({
       <thead className="sticky top-0 shadow-md">
         <tr className="text-left bg-gray-200 dark:bg-gray-800 text-gray-700 dark:text-gray-200 text-sm py-3 select-none">
           <th className="px-3 py-2"></th>
-          <th
-            onClick={() => setSortFieldOrder("name")}
-            className="px-3 py-2 cursor-pointer hover:bg-gray-300 dark:hover:bg-gray-700"
-          >
-            <div className="flex items-center font-medium">
-              <p>Name</p>
-              <div className="ml-auto pl-2">
-                <ChevronUp
-                  size={chevronSize}
-                  className={`-mb-1 ${
-                    sortField === "name" && sortOrder === "asc"
-                      ? "text-gray-800 dark:text-gray-100"
-                      : "text-gray-400 dark:text-gray-600"
-                  }`}
-                />
-                <ChevronDown
-                  size={chevronSize}
-                  className={`-mt-1 ${
-                    sortField === "name" && sortOrder === "desc"
-                      ? "text-gray-800 dark:text-gray-100"
-                      : "text-gray-400 dark:text-gray-600"
-                  }`}
-                />
-              </div>
-            </div>
-          </th>
-          <th
-            onClick={() => setSortFieldOrder("date")}
-            className="px-3 py-2 cursor-pointer hover:bg-gray-300 dark:hover:bg-gray-700"
-          >
-            <div className="flex items-center font-medium">
-              <p>Date Modified</p>
-              <div className="ml-auto pl-2">
-                <ChevronUp
-                  size={chevronSize}
-                  className={`-mb-1 ${
-                    sortField === "date" && sortOrder === "asc"
-                      ? "text-gray-800 dark:text-gray-100"
-                      : "text-gray-400 dark:text-gray-600"
-                  }`}
-                />
-                <ChevronDown
-                  size={chevronSize}
-                  className={`-mt-1 ${
-                    sortField === "date" && sortOrder === "desc"
-                      ? "text-gray-800 dark:text-gray-100"
-                      : "text-gray-400 dark:text-gray-600"
-                  }`}
-                />
-              </div>
-            </div>
-          </th>
+          <ListViewTableHeading
+            fieldName="name"
+            fieldDisplay="Name"
+            sortField={sortField}
+            sortOrder={sortOrder}
+            setSortFieldOrder={setSortFieldOrder}
+          />
+          <ListViewTableHeading
+            fieldName="date"
+            fieldDisplay="Date Modified"
+            sortField={sortField}
+            sortOrder={sortOrder}
+            setSortFieldOrder={setSortFieldOrder}
+          />
 
-          <th
-            onClick={() => setSortFieldOrder("type")}
-            className="px-3 py-2 cursor-pointer hover:bg-gray-300 dark:hover:bg-gray-700"
-          >
-            <div className="flex items-center font-medium">
-              <p>Type</p>
-              <div className="ml-auto pl-2">
-                <ChevronUp
-                  size={chevronSize}
-                  className={`-mb-1 ${
-                    sortField === "type" && sortOrder === "asc"
-                      ? "text-gray-800 dark:text-gray-100"
-                      : "text-gray-400 dark:text-gray-600"
-                  }`}
-                />
-                <ChevronDown
-                  size={chevronSize}
-                  className={`-mt-1 ${
-                    sortField === "type" && sortOrder === "desc"
-                      ? "text-gray-800 dark:text-gray-100"
-                      : "text-gray-400 dark:text-gray-600"
-                  }`}
-                />
-              </div>
-            </div>
-          </th>
+          <ListViewTableHeading
+            fieldName="type"
+            fieldDisplay="Type"
+            sortField={sortField}
+            sortOrder={sortOrder}
+            setSortFieldOrder={setSortFieldOrder}
+          />
 
-          <th
-            onClick={() => setSortFieldOrder("size")}
-            className="px-3 py-2 cursor-pointer hover:bg-gray-300 dark:hover:bg-gray-700"
-          >
-            <div className="flex items-center font-medium">
-              <p>Size</p>
-              <div className="ml-auto pl-2">
-                <ChevronUp
-                  size={chevronSize}
-                  className={`-mb-1 ${
-                    sortField === "size" && sortOrder === "asc"
-                      ? "text-gray-800 dark:text-gray-100"
-                      : "text-gray-400 dark:text-gray-600"
-                  }`}
-                />
-                <ChevronDown
-                  size={chevronSize}
-                  className={`-mt-1 ${
-                    sortField === "size" && sortOrder === "desc"
-                      ? "text-gray-800 dark:text-gray-100"
-                      : "text-gray-400 dark:text-gray-600"
-                  }`}
-                />
-              </div>
-            </div>
-          </th>
+          <ListViewTableHeading
+            fieldName="size"
+            fieldDisplay="Size"
+            sortField={sortField}
+            sortOrder={sortOrder}
+            setSortFieldOrder={setSortFieldOrder}
+          />
         </tr>
       </thead>
       <tbody>
@@ -157,7 +105,7 @@ const ListView = ({
               onClick={() => {
                 setSelectedIndex(index);
                 if (item.isDirectory) return;
-                selectionMode ? onCopyUrl(item) : onPreview(item);
+                onPreview(item);
               }}
               onContextMenu={e => {
                 e.preventDefault();
