@@ -1,6 +1,12 @@
-import { useState, useEffect, useCallback } from "react";
+import {
+  useState,
+  useEffect,
+  useCallback,
+  useRef,
+  useLayoutEffect,
+} from "react";
 import { getIconFromExtension } from "../helpers";
-import { Archive, Folder, ChevronRight, ChevronDown } from "react-feather";
+import { Archive, Folder, ChevronRight } from "react-feather";
 import path from "path";
 
 const SidebarItem = ({
@@ -9,9 +15,13 @@ const SidebarItem = ({
   onPreview,
   onContextMenu,
   onBrowse,
+  onHeightChanged,
 }) => {
   const [childrenItems, setChildrenItems] = useState([]);
   const [isExpanded, setIsExpanded] = useState(false);
+
+  const childrenItemsRef = useRef(null);
+  const [childrenItemsHeight, setChildrenItemsHeight] = useState(0);
 
   const getChildrenItems = useCallback(
     async item => setChildrenItems(await onBrowse(item.path)),
@@ -25,20 +35,32 @@ const SidebarItem = ({
     getChildrenItems(item);
   }, [isExpanded, item]);
 
+  useLayoutEffect(() => {
+    const height = childrenItemsRef.current?.scrollHeight;
+    onHeightChanged?.(isExpanded ? height : -height);
+  }, [isExpanded, childrenItems]);
+
+  const onChildHeightChanged = delta => {
+    setChildrenItemsHeight(childrenItemsRef.current?.scrollHeight + delta);
+    onHeightChanged?.(delta);
+  };
+
   const Icon = item.isDirectory
     ? Folder
     : getIconFromExtension(path.extname(item.path));
 
   return (
     <section>
-      <div className="flex items-center">
+      <div className="flex items-center mb-1">
         <button
           onClick={() => setIsExpanded(isExpanded => !isExpanded)}
           className={`${
             item.isDirectory && childrenItems.length ? "" : "invisible"
-          } text-gray-600 dark:text-gray-500 dark:hover:text-gray-100 py-1.5 px-1 ml-1 transition-colors`}
+          } ${
+            isExpanded ? "rotate-90" : ""
+          } text-gray-600 dark:text-gray-500 dark:hover:text-gray-100 py-1.5 px-1 ml-1 transition-[transform,color]`}
         >
-          {isExpanded ? <ChevronDown size={15} /> : <ChevronRight size={15} />}
+          <ChevronRight size={15} />
         </button>
         <button
           title={path.basename(item.path)}
@@ -58,26 +80,27 @@ const SidebarItem = ({
         </button>
       </div>
       <div
-        className={`${isExpanded ? "block" : "hidden"} pl-4 my-0.5 relative`}
+        ref={childrenItemsRef}
+        className="pl-4 relative transition-[max-height] duration-200 ease-linear overflow-hidden"
+        style={{ maxHeight: isExpanded ? childrenItemsHeight : 0 }}
       >
         <button
           onClick={() => setIsExpanded(false)}
-          className="absolute ml-2.5 px-1 top-0 bottom-0 left-0 group"
+          className="absolute ml-2.5 mb-1 px-1 top-0 bottom-0 left-0 group"
         >
-          <div className="w-px h-full bg-gray-500 group-hover:bg-gray-100" />
+          <div className="w-px h-full bg-gray-500 group-hover:bg-gray-100 transition-colors" />
         </button>
-        <div className="space-y-0.5">
-          {childrenItems.map(item => (
-            <SidebarItem
-              key={item.path}
-              item={item}
-              onNavigate={onNavigate}
-              onContextMenu={onContextMenu}
-              onBrowse={onBrowse}
-              onPreview={onPreview}
-            />
-          ))}
-        </div>
+        {childrenItems.map(item => (
+          <SidebarItem
+            key={item.path}
+            item={item}
+            onNavigate={onNavigate}
+            onContextMenu={onContextMenu}
+            onBrowse={onBrowse}
+            onPreview={onPreview}
+            onHeightChanged={onChildHeightChanged}
+          />
+        ))}
       </div>
     </section>
   );
@@ -92,7 +115,7 @@ const Sidebar = ({
   onBrowse,
 }) => {
   return (
-    <aside className="py-5 px-3 -border-r border-gray-300 dark:border-gray-600">
+    <div className="py-5 px-3">
       <h4 className="text-gray-400 pl-2 mb-1 font-bold text-sm">Favorites</h4>
       <button
         title={"Archive"}
@@ -109,19 +132,17 @@ const Sidebar = ({
       </button>
 
       <h4 className="text-gray-400 pl-2 mb-1 font-bold text-sm">Home</h4>
-      <div className="space-y-0.5">
-        {rootItems.map(item => (
-          <SidebarItem
-            key={item.path}
-            item={item}
-            onNavigate={onNavigate}
-            onContextMenu={onContextMenu}
-            onBrowse={onBrowse}
-            onPreview={onPreview}
-          />
-        ))}
-      </div>
-    </aside>
+      {rootItems.map(item => (
+        <SidebarItem
+          key={item.path}
+          item={item}
+          onNavigate={onNavigate}
+          onContextMenu={onContextMenu}
+          onBrowse={onBrowse}
+          onPreview={onPreview}
+        />
+      ))}
+    </div>
   );
 };
 

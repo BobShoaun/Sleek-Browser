@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback, createContext } from "react";
+import { useEffect, useState, useCallback, createContext, useRef } from "react";
 import path from "path";
 import "./index.css";
 import UploadFileModal from "../components/UploadFileModal";
@@ -233,6 +233,30 @@ const FileBrowser = ({
     setToastOpen(true);
   };
 
+  // sidebar resizing
+  const sidebarResizeHandleRef = useRef(null);
+  const isSidebarResizing = useRef(false);
+  const [sidebarWidth, setSidebarWidth] = useState("clamp(250px, 20%, 350px)");
+  const sidebarMinWidth = "200px";
+  const sidebarMaxWidth = "50%";
+
+  useEffect(() => {
+    sidebarResizeHandleRef.current.addEventListener(
+      "mousedown",
+      () => (isSidebarResizing.current = true)
+    );
+    document.addEventListener(
+      "mouseup",
+      () => (isSidebarResizing.current = false)
+    );
+    document.addEventListener("mousemove", e => {
+      if (!isSidebarResizing.current) return;
+      setSidebarWidth(
+        `clamp(${sidebarMinWidth}, ${e.clientX}px, ${sidebarMaxWidth})`
+      );
+    });
+  }, []);
+
   return (
     <FileBrowserContext.Provider
       value={{
@@ -316,7 +340,16 @@ const FileBrowser = ({
           />
         </header>
 
-        <aside className="fb__sidebar absolute left-0 bottom-0 overflow-auto z-10 shadow-lg border-r border-gray-300 dark:border-gray-600 bg-gray-200 dark:bg-gray-800">
+        <aside
+          style={{
+            width: sidebarWidth,
+          }}
+          className="fb__sidebar absolute left-0 bottom-0 overflow-visible z-10 shadow-lg border-r border-gray-300 dark:border-gray-600 bg-gray-200 dark:bg-gray-800"
+        >
+          <div
+            ref={sidebarResizeHandleRef}
+            className="fbg-black/50 absolute bottom-0 top-0 -right-1.5 w-3 cursor-ew-resize"
+          />
           <Sidebar
             rootItems={rootItems}
             onNavigate={navigate}
@@ -335,6 +368,7 @@ const FileBrowser = ({
             e.preventDefault();
             openContextMenu(null, e.pageX, e.pageY);
           }}
+          style={{ left: sidebarWidth }}
         >
           {isLoading && <Loading />}
           {!currentItems ? (
@@ -366,7 +400,8 @@ const FileBrowser = ({
         <footer
           className={`fb__footer ${
             detailsOpen ? "details-open" : "details-closed"
-          } absolute bottom-0 z-10 shadow-md`}
+          } absolute bottom-0 shadow-md`}
+          style={{ left: sidebarWidth }}
         >
           <Footer />
         </footer>
