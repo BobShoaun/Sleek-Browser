@@ -141,14 +141,25 @@ const Toolbar = ({
               onDoubleClick={() => setEditMode(true)}
               className="flex items-center no-scrollbar overflow-auto my-auto px-5 w-full"
             >
+              <>
+                <span
+                  onClick={() => onNavigate("/")}
+                  className="hover:underline cursor-pointer whitespace-nowrap flex-shrink-0"
+                >
+                  Home
+                </span>
+                <ChevronRight
+                  size={15}
+                  className="mx-1.5 whitespace-nowrap flex-shrink-0 last:hidden"
+                />
+              </>
               {pathEntries.map((entry, index) => (
                 <Fragment key={index}>
                   <span
-                    onClick={
-                      () =>
-                        onNavigate(
-                          `${pathEntries.slice(0, index + 1).join("/")}/`
-                        ) // may need to revisit
+                    onClick={() =>
+                      onNavigate(
+                        `/${pathEntries.slice(0, index + 1).join("/")}`
+                      )
                     }
                     className="hover:underline cursor-pointer whitespace-nowrap flex-shrink-0"
                   >
@@ -157,7 +168,7 @@ const Toolbar = ({
                   <ChevronRight
                     size={15}
                     className="mx-1.5 whitespace-nowrap flex-shrink-0 last:hidden"
-                  ></ChevronRight>
+                  />
                 </Fragment>
               ))}
             </p>

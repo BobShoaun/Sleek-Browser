@@ -22,23 +22,23 @@ const GridView = ({
       {currentItems.map((item, index) => {
         const Icon = item.isDirectory
           ? Folder
-          : getIconFromExtension(path.extname(item.name));
+          : getIconFromExtension(path.extname(item.path));
         return (
           <button
-            title={item.name}
+            title={path.basename(item.path)}
             onDoubleClick={() => item.isDirectory && onNavigate(item.path)}
             onClick={() => {
               setSelectedIndex(index);
               if (item.isDirectory) return;
               selectionMode ? onCopyUrl(item) : onPreview(item);
             }}
-            onContextMenu={(e) => {
+            onContextMenu={e => {
               e.preventDefault();
               e.stopPropagation();
               onContextMenu(item, e.pageX, e.pageY);
             }}
             className="py-3.5 px-2 hover:bg-gray-200 dark:hover:bg-gray-800 focus:bg-gray-300 dark:focus:bg-gray-700 transition-colors rounded-sm"
-            key={item.name}
+            key={item.path}
           >
             <Icon
               className="text-gray-600 dark:text-gray-300 mx-auto mb-1.5"
@@ -46,7 +46,7 @@ const GridView = ({
             />
 
             <p className="text-center text-sm text-gray-700 dark:text-gray-200 break-words">
-              {item.name || "-"}
+              {path.basename(item.path) || "-"}
             </p>
           </button>
         );
@@ -59,7 +59,7 @@ const GridView = ({
             size={40}
           />
           <form
-            onSubmit={(e) => {
+            onSubmit={e => {
               e.preventDefault();
               onCreateFolder(newFolderInput.current.value);
             }}
@@ -70,7 +70,7 @@ const GridView = ({
               type="text"
               defaultValue="New folder"
               onBlur={() => onCreateFolder(newFolderInput.current.value)}
-              onFocus={(e) => e.target.select()}
+              onFocus={e => e.target.select()}
               className="w-full px-1 bg-gray-100 dark:bg-gray-800 border-2 border-gray-500 rounded-sm text-center text-sm text-gray-700 dark:text-gray-200 break-words"
             />
           </form>
