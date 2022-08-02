@@ -6,7 +6,14 @@ import {
   useLayoutEffect,
 } from "react";
 import { getIconFromExtension } from "../helpers";
-import { Archive, Folder, ChevronRight } from "react-feather";
+import {
+  Archive,
+  Folder,
+  ChevronRight,
+  Home,
+  Star,
+  Clock,
+} from "react-feather";
 import path from "path";
 
 const SidebarItem = ({
@@ -73,7 +80,7 @@ const SidebarItem = ({
             e.stopPropagation();
             onContextMenu(item, e.pageX, e.pageY);
           }}
-          className="flex items-center flex-grow overflow-hidden gap-3 px-2.5 rounded-sm text-gray-600 dark:text-gray-200 hover:bg-gray-300 focus:bg-gray-300 dark:hover:bg-gray-700 dark:focus:bg-gray-700 py-1.5"
+          className="flex items-center flex-grow overflow-hidden gap-2 px-2 rounded-sm text-gray-600 dark:text-gray-200 hover:bg-gray-300 focus:bg-gray-300 dark:hover:bg-gray-700 dark:focus:bg-gray-700 py-1.5"
         >
           <Icon className="flex-shrink-0" size={15} />
           <p className="text-sm truncate">{path.basename(item.path) || "-"}</p>
@@ -116,32 +123,57 @@ const Sidebar = ({
 }) => {
   return (
     <div className="py-5 px-3">
-      <h4 className="text-gray-400 pl-2 mb-1 font-bold text-sm">Favorites</h4>
-      <button
-        title={"Archive"}
-        key={"Archive"}
-        onClick={onArchive}
-        className="w-full flex items-center gap-3 rounded-sm hover:bg-gray-300 focus:bg-gray-300 dark:hover:bg-gray-700 dark:focus:bg-gray-700 py-1.5 px-3 mb-4"
-      >
-        <div className="flex-shrink-0 text-gray-600 dark:text-gray-200">
-          <Archive className="" size={15} />
-        </div>
-        <p className="text-gray-600 dark:text-gray-200 text-sm text-left truncate">
-          Archived Files
-        </p>
-      </button>
+      <div className="mb-2">
+        <button
+          title="Recents"
+          onClick={() => onNavigate("/")}
+          className="mb-1 flex items-center w-full overflow-hidden font-bold gap-2.5 px-2 rounded-sm text-gray-400 dark:text-gray-400 hover:bg-gray-300 focus:bg-gray-300 dark:hover:bg-gray-700 dark:focus:bg-gray-700 py-1.5"
+        >
+          <Clock className="flex-shrink-0" size={15} />
+          <p className="text-sm truncate">Recents</p>
+        </button>
+      </div>
 
-      <h4 className="text-gray-400 pl-2 mb-1 font-bold text-sm">Home</h4>
-      {rootItems.map(item => (
-        <SidebarItem
-          key={item.path}
-          item={item}
-          onNavigate={onNavigate}
-          onContextMenu={onContextMenu}
-          onBrowse={onBrowse}
-          onPreview={onPreview}
-        />
-      ))}
+      <div className="mb-2">
+        <button
+          title="Favorites"
+          onClick={() => onNavigate("/")}
+          className="mb-1 flex items-center w-full overflow-hidden font-bold gap-2.5 px-2 rounded-sm text-gray-400 dark:text-gray-400 hover:bg-gray-300 focus:bg-gray-300 dark:hover:bg-gray-700 dark:focus:bg-gray-700 py-1.5"
+        >
+          <Star className="flex-shrink-0" size={15} />
+          <p className="text-sm truncate">Favorites</p>
+        </button>
+      </div>
+
+      <div className="mb-2">
+        <button
+          title="Home"
+          onClick={() => onNavigate("/")}
+          className="mb-1 flex items-center w-full overflow-hidden font-bold gap-2.5 px-2 rounded-sm text-gray-400 dark:text-gray-400 hover:bg-gray-300 focus:bg-gray-300 dark:hover:bg-gray-700 dark:focus:bg-gray-700 py-1.5"
+        >
+          <Home className="flex-shrink-0" size={15} />
+          <p className="text-sm truncate">Home</p>
+        </button>
+        {rootItems.map(item => (
+          <SidebarItem
+            key={item.path}
+            item={item}
+            onNavigate={onNavigate}
+            onContextMenu={onContextMenu}
+            onBrowse={onBrowse}
+            onPreview={onPreview}
+          />
+        ))}
+      </div>
+
+      <button
+        title="Archived"
+        onClick={() => onNavigate("/")}
+        className="mb-1 flex items-center w-full overflow-hidden font-bold gap-2.5 px-2 rounded-sm text-gray-400 dark:text-gray-400 hover:bg-gray-300 focus:bg-gray-300 dark:hover:bg-gray-700 dark:focus:bg-gray-700 py-1.5"
+      >
+        <Archive className="flex-shrink-0" size={15} />
+        <p className="text-sm truncate">Archived</p>
+      </button>
     </div>
   );
 };
