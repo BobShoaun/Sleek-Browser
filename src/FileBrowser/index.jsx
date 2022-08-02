@@ -57,7 +57,7 @@ const FileBrowser = ({
 
   // details pane
   const [previewFile, setPreviewFile] = useState(null);
-  const [detailsOpen, setDetailsOpen] = useState(false);
+  const [isDetailsOpen, setDetailsOpen] = useState(false);
 
   // search
   const [searchQuery, setSearchQuery] = useState("");
@@ -233,12 +233,12 @@ const FileBrowser = ({
     setToastOpen(true);
   };
 
-  // sidebar resizing
+  // sidebar resizing, TODO: extract into hook
   const sidebarResizeHandleRef = useRef(null);
   const isSidebarResizing = useRef(false);
   const [sidebarWidth, setSidebarWidth] = useState("clamp(250px, 20%, 350px)");
   const sidebarMinWidth = "200px";
-  const sidebarMaxWidth = "50%";
+  const sidebarMaxWidth = "40%";
 
   useEffect(() => {
     sidebarResizeHandleRef.current.addEventListener(
@@ -253,6 +253,30 @@ const FileBrowser = ({
       if (!isSidebarResizing.current) return;
       setSidebarWidth(
         `clamp(${sidebarMinWidth}, ${e.clientX}px, ${sidebarMaxWidth})`
+      );
+    });
+  }, []);
+
+  // details bar resizing
+  const detailsResizeHandleRef = useRef(null);
+  const isDetailsResizing = useRef(false);
+  const [detailsWidth, setDetailsWidth] = useState("clamp(280px, 25%, 400px)");
+  const detailsMinWidth = "250px";
+  const detailsMaxWidth = "40%";
+
+  useEffect(() => {
+    detailsResizeHandleRef.current.addEventListener(
+      "mousedown",
+      () => (isDetailsResizing.current = true)
+    );
+    document.addEventListener(
+      "mouseup",
+      () => (isDetailsResizing.current = false)
+    );
+    document.addEventListener("mousemove", e => {
+      if (!isDetailsResizing.current) return;
+      setDetailsWidth(
+        `clamp(${detailsMinWidth}, 100% - ${e.clientX}px, ${detailsMaxWidth})`
       );
     });
   }, []);
@@ -341,34 +365,36 @@ const FileBrowser = ({
         </header>
 
         <aside
-          style={{
-            width: sidebarWidth,
-          }}
+          style={{ width: sidebarWidth }}
           className="fb__sidebar absolute left-0 bottom-0 overflow-visible z-10 shadow-lg border-r border-gray-300 dark:border-gray-600 bg-gray-200 dark:bg-gray-800"
         >
           <div
             ref={sidebarResizeHandleRef}
-            className="fbg-black/50 absolute bottom-0 top-0 -right-1.5 w-3 cursor-ew-resize"
+            className="absolute bottom-0 top-0 -right-1.5 w-3 cursor-ew-resize"
           />
           <Sidebar
             rootItems={rootItems}
             onNavigate={navigate}
             onPreview={file => (setPreviewFile(file), setDetailsOpen(true))}
-            onArchive={() => navigate("Archive/")}
             onContextMenu={openContextMenu}
             onBrowse={onBrowse}
           />
         </aside>
 
         <section
-          className={`fb__main ${
-            detailsOpen ? "details-open" : "details-closed"
-          } absolute z-0 overflow-auto bg-gray-100 dark:bg-gray-900`}
+          className={`fb__main absolute z-0 overflow-auto bg-gray-100 dark:bg-gray-900 ${
+            isDetailsResizing.current
+              ? "transition-[none]"
+              : "transition-[right]"
+          }`}
           onContextMenu={e => {
             e.preventDefault();
             openContextMenu(null, e.pageX, e.pageY);
           }}
-          style={{ left: sidebarWidth }}
+          style={{
+            left: sidebarWidth,
+            right: isDetailsOpen ? detailsWidth : 0,
+          }}
         >
           {isLoading && <Loading />}
           {!currentItems ? (
@@ -398,20 +424,31 @@ const FileBrowser = ({
         </section>
 
         <footer
-          className={`fb__footer ${
-            detailsOpen ? "details-open" : "details-closed"
-          } absolute bottom-0 shadow-md`}
-          style={{ left: sidebarWidth }}
+          className={`fb__footer absolute bottom-0 shadow-md ${
+            isDetailsResizing.current
+              ? "transition-[none]"
+              : "transition-[right]"
+          }`}
+          style={{
+            left: sidebarWidth,
+            right: isDetailsOpen ? detailsWidth : 0,
+          }}
         >
           <Footer />
         </footer>
 
         <aside
-          className={`fb__details ${
-            detailsOpen ? "details-open" : "details-closed"
-          } absolute bottom-0 overflow-y-auto z-10 bg-gray-100 dark:bg-gray-900 border-l border-gray-300 dark:border-gray-600 shadow-lg`}
+          className={`fb__details absolute bottom-0 overflow-visible z-10 transition-[right] bg-gray-100 dark:bg-gray-900 border-l border-gray-300 dark:border-gray-600 shadow-lg`}
+          style={{
+            width: detailsWidth,
+            right: isDetailsOpen ? 0 : `calc(-1 * ${detailsWidth})`,
+          }}
         >
-          {previewFile ? (
+          <div
+            ref={detailsResizeHandleRef}
+            className="absolute bottom-0 top-0 -left-1.5 w-3 cursor-ew-resize"
+          />
+          {previewFile && (
             <Detailsbar
               file={previewFile}
               onDelete={() => setDeletingFile(previewFile)}
@@ -422,7 +459,7 @@ const FileBrowser = ({
               onDownload={onDownload}
               onZoom={() => setShowImgModal(true)}
             />
-          ) : null}
+          )}
         </aside>
       </main>
     </FileBrowserContext.Provider>

@@ -117,7 +117,6 @@ const Sidebar = ({
   rootItems,
   onNavigate,
   onPreview,
-  onArchive,
   onContextMenu,
   onBrowse,
 }) => {
