@@ -46,6 +46,7 @@ const ListView = ({
 
   const newFolderInput = useRef(null);
   const [selectedIndex, setSelectedIndex] = useState(-1);
+  const showHiddenFiles = false;
 
   const setSortFieldOrder = field => {
     setSortOrder(
@@ -53,6 +54,10 @@ const ListView = ({
     );
     setSortField(field);
   };
+
+  const displayedItems = showHiddenFiles
+    ? filteredItems
+    : filteredItems.filter(item => !path.basename(item.path).startsWith("."));
 
   return (
     <table className="table-auto w-full border-collapse border-b border-gray-300 dark:border-gray-800">
@@ -92,7 +97,7 @@ const ListView = ({
         </tr>
       </thead>
       <tbody>
-        {filteredItems.map((item, index) => {
+        {displayedItems.map((item, index) => {
           const Icon = item.isDirectory
             ? Folder
             : getIconFromExtension(path.extname(item.path));

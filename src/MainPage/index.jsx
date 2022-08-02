@@ -21,12 +21,20 @@ const MainPage = () => {
 
   const downloadFile = async file => {};
 
+  const createFolder = async _path => {
+    items.push({
+      path: _path,
+      isDirectory: true,
+    });
+  };
+
   return (
     <FileBrowser
       onBrowse={getItems}
       onUpload={uploadFile}
       onDelete={deleteFile}
       onDownload={downloadFile}
+      onCreateFolder={createFolder}
       homePath="/"
       canUpload={() => true}
       fileSizeLimit={fileSizeLimit}

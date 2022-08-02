@@ -28,6 +28,7 @@ const FileBrowser = ({
   homePath,
   canUpload,
   onDownload,
+  onCreateFolder,
   fileSizeLimit,
 }) => {
   // navigation
@@ -159,6 +160,11 @@ const FileBrowser = ({
   };
 
   const uploadNewFolder = async name => {
+    await onCreateFolder(path.join(currentPath, name));
+    refresh();
+    setShowNewFolder(false);
+    return;
+
     const file = new File([], name); // empty file for creating directory
     const _path = path.join(currentPath, name, file.name);
     await onUpload(file, _path);

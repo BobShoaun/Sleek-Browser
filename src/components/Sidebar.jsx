@@ -17,6 +17,8 @@ import {
 } from "react-feather";
 import path from "path";
 
+const showHiddenFiles = false;
+
 const SidebarItem = ({
   item,
   onNavigate,
@@ -56,6 +58,10 @@ const SidebarItem = ({
   const Icon = item.isDirectory
     ? Folder
     : getIconFromExtension(path.extname(item.path));
+
+  const displayedChildrenItems = showHiddenFiles
+    ? childrenItems
+    : childrenItems.filter(item => !path.basename(item.path).startsWith("."));
 
   return (
     <section>
@@ -103,7 +109,7 @@ const SidebarItem = ({
         >
           <div className="w-px h-full bg-gray-400 group-hover:bg-gray-600 group-focus:bg-gray-600 dark:bg-gray-500 dark:group-hover:bg-gray-200 dark:group-focus:bg-gray-200 transition-colors" />
         </button>
-        {childrenItems.map(item => (
+        {displayedChildrenItems.map(item => (
           <SidebarItem
             key={item.path}
             item={item}
