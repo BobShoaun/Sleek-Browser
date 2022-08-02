@@ -241,14 +241,14 @@ const FileBrowser = ({
   const sidebarMaxWidth = "40%";
 
   useEffect(() => {
-    sidebarResizeHandleRef.current.addEventListener(
-      "mousedown",
-      () => (isSidebarResizing.current = true)
-    );
-    document.addEventListener(
-      "mouseup",
-      () => (isSidebarResizing.current = false)
-    );
+    sidebarResizeHandleRef.current.addEventListener("mousedown", () => {
+      isSidebarResizing.current = true;
+      document.body.classList.add("no-select");
+    });
+    document.addEventListener("mouseup", () => {
+      isSidebarResizing.current = false;
+      document.body.classList.remove("no-select");
+    });
     document.addEventListener("mousemove", e => {
       if (!isSidebarResizing.current) return;
       setSidebarWidth(
@@ -265,14 +265,14 @@ const FileBrowser = ({
   const detailsMaxWidth = "40%";
 
   useEffect(() => {
-    detailsResizeHandleRef.current.addEventListener(
-      "mousedown",
-      () => (isDetailsResizing.current = true)
-    );
-    document.addEventListener(
-      "mouseup",
-      () => (isDetailsResizing.current = false)
-    );
+    detailsResizeHandleRef.current.addEventListener("mousedown", () => {
+      isDetailsResizing.current = true;
+      document.body.classList.add("no-select");
+    });
+    document.addEventListener("mouseup", () => {
+      isDetailsResizing.current = false;
+      document.body.classList.remove("no-select");
+    });
     document.addEventListener("mousemove", e => {
       if (!isDetailsResizing.current) return;
       setDetailsWidth(

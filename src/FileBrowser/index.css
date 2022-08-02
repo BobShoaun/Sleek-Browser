@@ -43,3 +43,7 @@ input[type="search"]::-webkit-search-decoration {
   top: var(--header-height);
   bottom: var(--footer-height);
 }
+
+.no-select * {
+  user-select: none;
+}
