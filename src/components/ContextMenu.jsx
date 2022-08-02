@@ -80,8 +80,10 @@ const ContextMenu = ({
                 <ChevronRight className="ml-auto" size={15} />
               </button>
               <ul
-                className="group-hover:opacity-100 group-hover:z-50 opacity-0 absolute top-0 left-full space-y-1 bg-gray-100 dark:bg-gray-800 text-sm text-gray-700 dark:text-gray-100 shadow-lg p-1 transition-opacity"
-                style={{ minWidth: "8em" }}
+                className={`group-focus-within:opacity-100 group-focus-within:pointer-events-auto 
+                group-hover:opacity-100 group-hover:pointer-events-auto pointer-events-none opacity-0 
+                absolute min-w-[8em] top-0 left-full space-y-1 bg-gray-100 dark:bg-gray-800 text-sm 
+                text-gray-700 dark:text-gray-100 shadow-lg p-1 transition-opacity`}
               >
                 <li>
                   <button
@@ -103,64 +105,67 @@ const ContextMenu = ({
             </li>
             <li className="group relative">
               <button className="list-button flex items-center">
-                <BarChart size={13} /> <p>Sort</p>{" "}
+                <BarChart size={13} /> <p>Sort</p>
                 <ChevronRight className="ml-auto" size={15} />
               </button>
-              <ul
-                className="group-hover:opacity-100 group-hover:z-50 opacity-0 absolute top-0 left-full space-y-1 bg-gray-100 dark:bg-gray-800 text-sm text-gray-700 dark:text-gray-100 shadow-lg p-1 transition-opacity"
-                style={{ minWidth: "8em" }}
+              <div
+                tabIndex={1}
+                className={`group-focus-within:opacity-100 group-focus-within:pointer-events-auto 
+                group-hover:opacity-100 group-hover:pointer-events-auto pointer-events-none opacity-0 
+                absolute top-0 left-full space-y-1 bg-gray-100 dark:bg-gray-800 text-sm text-gray-700 
+                dark:text-gray-100 shadow-lg p-1 transition-opacity`}
               >
-                <li>
+                <fieldset>
+                  <legend className="sr-only">Sort Field</legend>
                   <RadioButton
                     onChange={setSortField}
                     field={sortField}
                     value="name"
                     title="Name"
+                    name="sort-field-2"
                   />
-                </li>
-                <li>
                   <RadioButton
                     onChange={setSortField}
                     field={sortField}
                     value="date"
-                    title="Last Modified"
+                    title="Date Modified"
+                    name="sort-field-2"
                   />
-                </li>
-                <li>
                   <RadioButton
                     onChange={setSortField}
                     field={sortField}
                     value="type"
                     title="Type"
+                    name="sort-field-2"
                   />
-                </li>
-                <li>
                   <RadioButton
                     onChange={setSortField}
                     field={sortField}
                     value="size"
                     title="Size"
+                    name="sort-field-2"
                   />
-                </li>
-                <hr className="my-1 dark:border-gray-500" />
+                </fieldset>
+                <hr className="my-2 dark:border-gray-700" role="none" />
 
-                <li>
+                <fieldset>
+                  <legend className="sr-only">Sort Order</legend>
                   <RadioButton
                     onChange={setSortOrder}
                     field={sortOrder}
                     value="asc"
                     title="Ascending"
+                    name="sort-order-2"
                   />
-                </li>
-                <li>
                   <RadioButton
                     onChange={setSortOrder}
                     field={sortOrder}
                     value="desc"
                     title="Descending"
+                    name="sort-order-2"
                   />
-                </li>
-              </ul>
+                </fieldset>
+              </div>
             </li>
             <li>
               <button

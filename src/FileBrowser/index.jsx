@@ -438,10 +438,11 @@ const FileBrowser = ({
         </footer>
 
         <aside
-          className={`fb__details absolute bottom-0 overflow-visible z-10 transition-[right] bg-gray-100 dark:bg-gray-900 border-l border-gray-300 dark:border-gray-600 shadow-lg`}
+          className={`fb__details absolute bottom-0 overflow-visible z-10 transition-[right,visibility] bg-gray-100 dark:bg-gray-900 border-l border-gray-300 dark:border-gray-600 shadow-lg`}
           style={{
             width: detailsWidth,
             right: isDetailsOpen ? 0 : `calc(-1 * ${detailsWidth})`,
+            visibility: isDetailsOpen ? "visible" : "hidden",
           }}
         >
           <div
