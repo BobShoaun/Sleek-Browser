@@ -1,15 +1,20 @@
-const RadioButton = ({ onChange, name, field, title, value }) => (
-  <label className="flex items-center gap-2 cursor-pointer rounded-sm px-3 py-1 transition-colors whitespace-nowrap hover:bg-gray-200 dark:hover:bg-gray-700 focus:bg-gray-200 dark:focus:bg-gray-700">
-    <input
-      type="radio"
-      name={name}
-      value={value}
-      checked={field === value}
-      onChange={e => onChange(e.target.value)}
-      className="before:content-['•'] before:opacity-0 before:checked:opacity-100 before:text-xl appearance-none before:transition-opacity"
-    />
-    {title}
-  </label>
-);
+const RadioButton = ({ onChange, field, title, value }) => {
+  return (
+    <button
+      onClick={() => onChange(value)}
+      className="flex cursor-pointer items-center gap-3 px-3 py-1 w-full text-left whitespace-nowrap hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+    >
+      <span
+        className={`transition-opacity ${
+          field === value ? "opacity-100" : "opacity-0"
+        }`}
+        style={{ fontSize: "1.5rem" }}
+      >
+        •
+      </span>
+      {title}
+    </button>
+  );
+};
 
 export default RadioButton;

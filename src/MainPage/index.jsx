@@ -1,7 +1,6 @@
 import FileBrowser from "../FileBrowser";
 import path from "path";
 import { items as _items } from "./files";
-import { useState } from "react";
 
 let items = _items;
 
@@ -42,6 +41,19 @@ const MainPage = () => {
     items = items.filter(item => item.path !== _path);
   };
 
+  const copy = async (targetItemPath, destinationDirectoryPath) => {
+    console.log("from", targetItemPath);
+    console.log("to", destinationDirectoryPath);
+
+    // TODO: also copy children in folder
+
+    const targetItem = items.find(item => item.path === targetItemPath);
+    items.push({
+      ...targetItem,
+      path: path.join(destinationDirectoryPath, path.basename(targetItemPath)),
+    });
+  };
+
   return (
     <FileBrowser
       onBrowse={getItems}
@@ -50,7 +62,7 @@ const MainPage = () => {
       onDownload={downloadFile}
       onCreateDirectory={createDirectory}
       onDeleteDirectory={deleteDirectory}
-      homePath="/"
+      onCopy={copy}
       canUpload={() => true}
       fileSizeLimit={fileSizeLimit}
     />

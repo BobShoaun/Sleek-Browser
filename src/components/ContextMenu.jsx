@@ -32,6 +32,7 @@ const ContextMenu = ({
   canUpload,
   onUpload,
   onNewFolder,
+  onPaste,
 }) => {
   const wrapperRef = useRef(null);
   useClickOutside(wrapperRef, () => {
@@ -59,8 +60,27 @@ const ContextMenu = ({
 
   const mode = item ? (item.isDirectory ? "directory" : "file") : "general";
 
-  const { refresh, setView, sortField, setSortField, sortOrder, setSortOrder } =
-    useContext(FileBrowserContext);
+  const {
+    refresh,
+    setView,
+    sortField,
+    setSortField,
+    sortOrder,
+    setSortOrder,
+    setClipboardItem,
+    setClipboardItemPath,
+    currentPath,
+  } = useContext(FileBrowserContext);
+
+  const copy = () => {
+    setClipboardItemPath(item.path);
+    onClose();
+  };
+
+  const paste = () => {
+    onPaste(mode === "general" ? currentPath : item.path);
+    onClose();
+  };
 
   return (
     <main
@@ -77,6 +97,12 @@ const ContextMenu = ({
       <ul className="text-sm text-gray-700 dark:text-gray-100 space-y-1">
         {mode === "general" && (
           <>
+            <li>
+              <button onClick={paste} className="list-button flex items-center">
+                <Clipboard size={13} />
+                <p>Paste</p>
+              </button>
+            </li>
             <li className="group relative">
               <button className="list-button flex items-center">
                 <Eye size={13} /> <p>View</p>{" "}
@@ -205,7 +231,7 @@ const ContextMenu = ({
           <>
             <li>
               <button
-                onClick={() => onClose()}
+                onClick={() => copy()}
                 className="list-button flex items-center"
               >
                 <Copy size={13} />
@@ -222,10 +248,7 @@ const ContextMenu = ({
               </button>
             </li>
             <li>
-              <button
-                onClick={() => onClose()}
-                className="list-button flex items-center"
-              >
+              <button onClick={paste} className="list-button flex items-center">
                 <Clipboard size={13} />
                 <p>Paste</p>
               </button>
@@ -239,7 +262,7 @@ const ContextMenu = ({
                 <p>Copy Path</p>
               </button>
             </li>
-            <hr className="my-2 dark:border-gray-500" />
+            <hr className="my-2 dark:border-gray-600" />
             <li>
               <button
                 onClick={() => onClose()}
@@ -266,13 +289,29 @@ const ContextMenu = ({
           <>
             <li>
               <button
-                onClick={() => (onClose(), onDownload(item))}
+                onClick={() => copy()}
                 className="list-button flex items-center"
               >
-                <Download size={13} />
-                <p>Download</p>
+                <Copy size={13} />
+                <p>Copy</p>
               </button>
             </li>
+            <li>
+              <button
+                onClick={() => onClose()}
+                className="list-button flex items-center"
+              >
+                <Scissors size={13} />
+                <p>Cut</p>
+              </button>
+            </li>
+            <li>
+              <button onClick={paste} className="list-button flex items-center">
+                <Clipboard size={13} />
+                <p>Paste</p>
+              </button>
+            </li>
+
             <li>
               <button
                 onClick={copyUrl}
@@ -280,6 +319,18 @@ const ContextMenu = ({
               >
                 <Link size={13} />
                 <p>Copy URL</p>
+              </button>
+            </li>
+
+            <hr className="my-2 dark:border-gray-600" />
+
+            <li>
+              <button
+                onClick={() => (onClose(), onDownload(item))}
+                className="list-button flex items-center"
+              >
+                <Download size={13} />
+                <p>Download</p>
               </button>
             </li>
             <li>

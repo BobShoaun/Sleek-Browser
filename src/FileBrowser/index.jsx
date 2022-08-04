@@ -30,6 +30,7 @@ const FileBrowser = ({
   onCreateDirectory,
   onDeleteDirectory,
   fileSizeLimit,
+  onCopy,
 }) => {
   // navigation
   const [currentPath, setCurrentPath] = useState("/");
@@ -77,6 +78,10 @@ const FileBrowser = ({
   // toast
   const [toastOpen, setToastOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
+
+  // clipboard
+  const [clipboardItem, setClipboardItem] = useState(null);
+  const [clipboardItemPath, setClipboardItemPath] = useState("");
 
   useEffect(() => {
     localStorage.setItem("view", view);
@@ -247,6 +252,11 @@ const FileBrowser = ({
     setToastOpen(true);
   };
 
+  const pasteClipboard = destinationDirectoryPath => {
+    onCopy(clipboardItemPath, destinationDirectoryPath);
+    setRefreshInfo({ path: destinationDirectoryPath });
+  };
+
   // sidebar resizing, TODO: extract into hook
   const sidebarResizeHandleRef = useRef(null);
   const isSidebarResizing = useRef(false);
@@ -314,6 +324,9 @@ const FileBrowser = ({
         theme,
         setTheme,
         refreshInfo,
+        clipboardItem,
+        setClipboardItem,
+        setClipboardItemPath,
       }}
     >
       <main
@@ -356,6 +369,7 @@ const FileBrowser = ({
           canUpload={canUpload(currentPath)}
           onUpload={() => setShowUploadModal(true)}
           onNewFolder={() => setShowNewFolder(true)}
+          onPaste={pasteClipboard}
         />
         <Toast
           open={toastOpen}
