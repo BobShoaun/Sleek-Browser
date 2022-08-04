@@ -4,7 +4,7 @@ import { getIconFromExtension } from "../helpers";
 import "./modal.css";
 
 const ConfirmDeleteModal = ({ onClose, onDelete, file }) => {
-  const extension = path.extname(file?.name);
+  const extension = path.extname(file?.path);
   const Icon = useMemo(() => getIconFromExtension(extension), [file]);
 
   return (
@@ -24,7 +24,7 @@ const ConfirmDeleteModal = ({ onClose, onDelete, file }) => {
           <Icon className="text-gray-600 dark:text-gray-300 mx-4" size={30} />
           <div className="">
             <h3 className="text-gray-700 dark:text-gray-200 font-bold">
-              {file.name}
+              {path.basename(file.path)}
             </h3>
             <p className="text-gray-600 dark:text-gray-400 text-sm break-all">
               {file.path}

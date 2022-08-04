@@ -29,25 +29,28 @@ const FileBrowser = ({
   canUpload,
   onDownload,
   onCreateFolder,
+  onDeleteFolder,
   fileSizeLimit,
 }) => {
   // navigation
-  const [currentPath, setCurrentPath] = useState("");
+  const [currentPath, setCurrentPath] = useState("/");
   const [currentItems, setCurrentItems] = useState([]);
   const [rootItems, setRootItems] = useState([]);
+  const [refreshSignal, setRefreshSignal] = useState(false);
+  const [refreshPath, setRefreshPath] = useState("/");
 
   // history
-  const history = useNavigate();
+  const navigate = useNavigate();
   const location = useLocation();
   const [backwardPaths, setBackwardPaths] = useState([]); // stack
   const [forwardPaths, setForwardPaths] = useState([]); // stack
   const [cachedPathItems, setCachedPathItems] = useState(new Map());
 
   // general
-  const [view, setView] = useState(localStorage.getItem("view") ?? "list");
+  const [view, setView] = useState(localStorage.view ?? "list");
   const [showNewFolder, setShowNewFolder] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [theme, setTheme] = useState(localStorage.getItem("theme") ?? "light");
+  const [theme, setTheme] = useState(localStorage.theme ?? "light");
 
   // modals
   const [showUploadModal, setShowUploadModal] = useState(false);
@@ -120,19 +123,19 @@ const FileBrowser = ({
     return pathItems;
   };
 
-  const navigate = async path => {
+  const _navigate = async path => {
     if (currentPath !== path) {
       setBackwardPaths(paths => [...paths, currentPath]); // push to back stack
       setForwardPaths([]);
     }
-    history(path);
+    navigate(path);
     setSearchQuery(""); // clear search box
     return await _setCurrentPath(path);
   };
 
   const refresh = () => {
-    navigate(currentPath);
-    if (currentPath === homePath) loadRoot();
+    _navigate(currentPath);
+    if (currentPath === "/") loadRoot();
   };
 
   // load root path for sidebar, without navigating to it
@@ -143,8 +146,8 @@ const FileBrowser = ({
 
   const initialize = useCallback(async () => {
     await loadRoot();
-    navigate(location.pathname || "/"); // if no path specified, go to homepath
-  }, [history]);
+    _navigate(location.pathname || "/"); // if no path specified, go to homepath
+  }, [navigate]);
 
   useEffect(() => {
     initialize();
@@ -162,37 +165,44 @@ const FileBrowser = ({
   const uploadNewFolder = async name => {
     await onCreateFolder(path.join(currentPath, name));
     refresh();
+    setRefreshPath(currentPath);
     setShowNewFolder(false);
-    return;
 
-    const file = new File([], name); // empty file for creating directory
-    const _path = path.join(currentPath, name, file.name);
-    await onUpload(file, _path);
-    refresh();
-    setShowNewFolder(false);
+    // const file = new File([], name); // empty file for creating directory
+    // const _path = path.join(currentPath, name, file.name);
+    // await onUpload(file, _path);
+    // refresh();
+    // setShowNewFolder(false);
   };
 
   const deleteFile = async _path => {
     await onDelete(_path);
     refresh();
+    setRefreshPath(path.dirname(_path));
     setDetailsOpen(false);
   };
 
   const deleteFolder = async _path => {
     // check if folder is empty
-    const items = await onBrowse(_path);
-    if (items.length > 0) {
-      setToastMessage(`Cannot delete non-empty folder.`);
-      setToastOpen(true);
-      return;
-    }
+    // const items = await onBrowse(_path);
+    // if (items.length > 0) {
+    //   setToastMessage(`Cannot delete non-empty folder.`);
+    //   setToastOpen(true);
+    //   return;
+    // }
+
+    await onDeleteFolder(_path);
+    const parentDirectory = path.dirname(_path);
+    _navigate(parentDirectory);
+    setRefreshPath(parentDirectory);
+
     // basicly deleting file within folder with same name.
-    const fileName = path.basename(_path);
-    const filePath = path.join(_path, fileName);
-    const dir = path.dirname(_path) + "/";
-    await onDelete(filePath);
-    navigate(dir);
-    if (dir === homePath) loadRoot();
+    // const fileName = path.basename(_path);
+    // const filePath = path.join(_path, fileName);
+    // const dir = path.dirname(_path) + "/";
+    // await onDelete(filePath);
+    // _navigate(dir);
+    // if (dir === homePath) loadRoot();
   };
 
   const goBack = () => {
@@ -293,7 +303,7 @@ const FileBrowser = ({
         currentPath,
         currentItems,
         filteredItems,
-        navigate,
+        navigate: _navigate,
         refresh,
         view,
         setView,
@@ -305,6 +315,8 @@ const FileBrowser = ({
         setSearchQuery,
         theme,
         setTheme,
+        refreshSignal,
+        refreshPath,
       }}
     >
       <main
@@ -358,10 +370,10 @@ const FileBrowser = ({
           <Toolbar
             backwardPaths={backwardPaths}
             forwardPaths={forwardPaths}
-            onHome={() => navigate("/")}
+            onHome={() => _navigate("/")}
             onNewFolder={() => setShowNewFolder(true)}
             onUpload={() => setShowUploadModal(true)}
-            onNavigate={navigate}
+            onNavigate={_navigate}
             onBack={goBack}
             onForwards={goForward}
             canUpload={canUpload}
@@ -379,8 +391,7 @@ const FileBrowser = ({
             className="absolute bottom-0 top-0 -right-1.5 w-3 cursor-ew-resize"
           />
           <Sidebar
-            rootItems={rootItems}
-            onNavigate={navigate}
+            onNavigate={_navigate}
             onPreview={file => (setPreviewFile(file), setDetailsOpen(true))}
             onContextMenu={openContextMenu}
             onBrowse={onBrowse}
@@ -411,7 +422,7 @@ const FileBrowser = ({
             <GridView
               currentItems={filteredItems}
               showNewFolder={showNewFolder}
-              onNavigate={navigate}
+              onNavigate={_navigate}
               onPreview={file => (setPreviewFile(file), setDetailsOpen(true))}
               onCreateFolder={uploadNewFolder}
               onContextMenu={openContextMenu}
@@ -420,7 +431,7 @@ const FileBrowser = ({
           ) : (
             <ListView
               showNewFolder={showNewFolder}
-              onNavigate={navigate}
+              onNavigate={_navigate}
               onPreview={file => (setPreviewFile(file), setDetailsOpen(true))}
               onCreateFolder={uploadNewFolder}
               onContextMenu={openContextMenu}

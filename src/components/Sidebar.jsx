@@ -1,10 +1,4 @@
-import {
-  useState,
-  useEffect,
-  useCallback,
-  useRef,
-  useLayoutEffect,
-} from "react";
+import { useState, useEffect, useCallback, useRef, useContext } from "react";
 import { getIconFromExtension } from "../helpers";
 import {
   Archive,
@@ -16,70 +10,89 @@ import {
   Trash2,
 } from "react-feather";
 import path from "path";
+import { FileBrowserContext } from "../FileBrowser";
 
 const showHiddenFiles = false;
 
 const SidebarItem = ({
   item,
+  isVisible = true,
   onNavigate,
   onPreview,
   onContextMenu,
   onBrowse,
-  onHeightChanged,
+  onVisibleDescendantsChange,
 }) => {
+  const { currentPath, refreshSignal } = useContext(FileBrowserContext);
   const [childrenItems, setChildrenItems] = useState([]);
   const [isExpanded, setIsExpanded] = useState(false);
 
-  const childrenItemsRef = useRef(null);
-  const [childrenItemsHeight, setChildrenItemsHeight] = useState(0);
+  const [childrenItemCounts, setChildrenItemCounts] = useState([]);
+  const itemRef = useRef(null);
+
+  const visibleChildrenItems = showHiddenFiles
+    ? childrenItems
+    : childrenItems.filter(item => !path.basename(item.path).startsWith("."));
+
+  const numVisibleDescendantItems = isExpanded
+    ? visibleChildrenItems.length +
+      childrenItemCounts.reduce((a, b) => a + b, 0)
+    : 0;
+
+  const Icon = item.isDirectory
+    ? Folder
+    : getIconFromExtension(path.extname(item.path));
 
   const getChildrenItems = useCallback(
     async item => setChildrenItems(await onBrowse(item.path)),
     [setChildrenItems, onBrowse]
   );
 
-  useEffect(() => void getChildrenItems(item), [item]);
+  useEffect(() => {
+    if (item.path === currentPath) {
+      console.log("refreshhhhh");
+      getChildrenItems(item);
+    }
+  }, [item, currentPath, refreshSignal]);
 
   useEffect(() => {
-    if (!isExpanded) return;
+    if (!isVisible) return;
     getChildrenItems(item);
-  }, [isExpanded, item]);
+  }, [item, isVisible]);
 
-  useLayoutEffect(() => {
-    const height = childrenItemsRef.current?.scrollHeight;
-    onHeightChanged?.(isExpanded ? height : -height);
-  }, [isExpanded, childrenItems]);
+  useEffect(
+    () => onVisibleDescendantsChange?.(numVisibleDescendantItems),
+    [numVisibleDescendantItems]
+  );
 
-  const onChildHeightChanged = delta => {
-    setChildrenItemsHeight(childrenItemsRef.current?.scrollHeight + delta);
-    onHeightChanged?.(delta);
-  };
-
-  const Icon = item.isDirectory
-    ? Folder
-    : getIconFromExtension(path.extname(item.path));
-
-  const displayedChildrenItems = showHiddenFiles
-    ? childrenItems
-    : childrenItems.filter(item => !path.basename(item.path).startsWith("."));
+  useEffect(() => {
+    if (!itemRef.current) return;
+    const itemStyle = window.getComputedStyle(itemRef.current);
+    const marginTop = parseInt(itemStyle.getPropertyValue("margin-top"));
+    const marginBottom = parseInt(itemStyle.getPropertyValue("margin-bottom"));
+    itemRef.current.fullHeight =
+      itemRef.current.offsetHeight + marginTop + marginBottom;
+  }, []);
 
   return (
     <section>
-      <div className="flex items-center mb-1">
+      <div className="flex items-center mb-1" ref={itemRef}>
         <button
           onClick={() => setIsExpanded(isExpanded => !isExpanded)}
           className={`${
             isExpanded ? "rotate-90" : ""
-          } text-gray-400 hover:text-gray-600 focus:text-gray-600 dark:text-gray-500 dark:hover:text-gray-200 dark:focus:text-gray-200 py-1.5 px-1 ml-1 transition-[transform,color]`}
+          } text-gray-400 hover:text-gray-600 focus:text-gray-600 dark:text-gray-500 dark:hover:text-gray-200 dark:focus:text-gray-200 py-1.5 px-1 ml-1`}
           style={{
             visibility:
-              item.isDirectory && childrenItems.length ? "" : "hidden",
+              item.isDirectory && visibleChildrenItems.length ? "" : "hidden",
+            transition:
+              "transform 200ms linear, color 150ms cubic-bezier(0.4, 0, 0.2, 1)",
           }}
         >
           <ChevronRight size={15} />
         </button>
         <button
-          title={path.basename(item.path)}
+          title={item.path}
           key={item.path}
           onClick={() =>
             item.isDirectory ? onNavigate(item.path) : onPreview(item)
@@ -96,10 +109,10 @@ const SidebarItem = ({
         </button>
       </div>
       <div
-        ref={childrenItemsRef}
         className="pl-4 relative transition-[max-height,visibility] duration-200 ease-linear overflow-hidden"
         style={{
-          maxHeight: isExpanded ? childrenItemsHeight : 0,
+          maxHeight:
+            numVisibleDescendantItems * (itemRef.current?.fullHeight ?? 0),
           visibility: isExpanded ? "" : "hidden", // do not set visible explicitly, theres a difference
         }}
       >
@@ -109,15 +122,20 @@ const SidebarItem = ({
         >
           <div className="w-px h-full bg-gray-400 group-hover:bg-gray-600 group-focus:bg-gray-600 dark:bg-gray-500 dark:group-hover:bg-gray-200 dark:group-focus:bg-gray-200 transition-colors" />
         </button>
-        {displayedChildrenItems.map(item => (
+        {visibleChildrenItems.map((item, index) => (
           <SidebarItem
-            key={item.path}
+            key={index}
             item={item}
+            isVisible={isExpanded}
             onNavigate={onNavigate}
             onContextMenu={onContextMenu}
             onBrowse={onBrowse}
             onPreview={onPreview}
-            onHeightChanged={onChildHeightChanged}
+            onVisibleDescendantsChange={count =>
+              setChildrenItemCounts(
+                cic => ((cic[index] = count), [...cic]) // create copy to ensure rerender
+              )
+            }
           />
         ))}
       </div>
@@ -125,18 +143,20 @@ const SidebarItem = ({
   );
 };
 
-const Sidebar = ({
-  rootItems,
-  onNavigate,
-  onPreview,
-  onContextMenu,
-  onBrowse,
-}) => {
+const Sidebar = ({ onNavigate, onPreview, onContextMenu, onBrowse }) => {
+  const [rootItems, setRootItems] = useState([]);
+  const { refreshSignal } = useContext(FileBrowserContext);
+
+  const getRootItems = useCallback(
+    async () => setRootItems(await onBrowse("/")),
+    []
+  );
+  useEffect(() => void getRootItems(), [getRootItems, refreshSignal]);
+
   return (
     <div className="py-5 px-3 overflow-y-auto h-full">
       <div className="mb-2">
         <button
-          title="Recents"
           onClick={() => onNavigate("/")}
           className="mb-1 flex items-center w-full overflow-hidden font-bold gap-2.5 px-2 rounded-sm text-gray-500 dark:text-gray-400 hover:bg-gray-300 focus:bg-gray-300 dark:hover:bg-gray-700 dark:focus:bg-gray-700 py-1.5"
         >
@@ -147,7 +167,6 @@ const Sidebar = ({
 
       <div className="mb-2">
         <button
-          title="Favorites"
           onClick={() => onNavigate("/")}
           className="mb-1 flex items-center w-full overflow-hidden font-bold gap-2.5 px-2 rounded-sm text-gray-500 dark:text-gray-400 hover:bg-gray-300 focus:bg-gray-300 dark:hover:bg-gray-700 dark:focus:bg-gray-700 py-1.5"
         >
@@ -158,7 +177,6 @@ const Sidebar = ({
 
       <div className="mb-2">
         <button
-          title="Home"
           onClick={() => onNavigate("/")}
           className="mb-1 flex items-center w-full overflow-hidden font-bold gap-2.5 px-2 rounded-sm text-gray-500 dark:text-gray-400 hover:bg-gray-300 focus:bg-gray-300 dark:hover:bg-gray-700 dark:focus:bg-gray-700 py-1.5"
         >
@@ -179,7 +197,6 @@ const Sidebar = ({
 
       <div className="mb-2">
         <button
-          title="Archived"
           onClick={() => onNavigate("/")}
           className="mb-1 flex items-center w-full overflow-hidden font-bold gap-2.5 px-2 rounded-sm text-gray-500 dark:text-gray-400 hover:bg-gray-300 focus:bg-gray-300 dark:hover:bg-gray-700 dark:focus:bg-gray-700 py-1.5"
         >
@@ -189,7 +206,6 @@ const Sidebar = ({
       </div>
 
       <button
-        title="Archived"
         onClick={() => onNavigate("/")}
         className="mb-1 flex items-center w-full overflow-hidden font-bold gap-2.5 px-2 rounded-sm text-gray-500 dark:text-gray-400 hover:bg-gray-300 focus:bg-gray-300 dark:hover:bg-gray-700 dark:focus:bg-gray-700 py-1.5"
       >

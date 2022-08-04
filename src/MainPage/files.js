@@ -20,6 +20,12 @@ export const items = [
     isDirectory: true,
   },
   {
+    path: "/Videos/.hidden.png",
+    size: 1024,
+    lastModified: Date.now(),
+    url: `https://images.unsplash.com/photo-1658309833607-4de9956d0bbd?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxlZGl0b3JpYWwtZmVlZHwyfHx8ZW58MHx8fHw%3D&auto=format&fit=crop&w=500&q=60`,
+  },
+  {
     path: "/Pictures/Pot.png",
     size: 1024,
     lastModified: Date.now(),
