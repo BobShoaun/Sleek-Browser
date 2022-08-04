@@ -42,16 +42,22 @@ const MainPage = () => {
   };
 
   const copy = async (targetItemPath, destinationDirectoryPath) => {
-    console.log("from", targetItemPath);
-    console.log("to", destinationDirectoryPath);
-
     // TODO: also copy children in folder
-
     const targetItem = items.find(item => item.path === targetItemPath);
     items.push({
       ...targetItem,
       path: path.join(destinationDirectoryPath, path.basename(targetItemPath)),
     });
+  };
+
+  const cut = async (targetItemPath, destinationDirectoryPath) => {
+    const targetItem = items.find(item => item.path === targetItemPath);
+    items.push({
+      ...targetItem,
+      path: path.join(destinationDirectoryPath, path.basename(targetItemPath)),
+    });
+    if (targetItem.isDirectory) deleteDirectory(targetItem.path);
+    else deleteFile(targetItem.path);
   };
 
   return (
@@ -63,8 +69,14 @@ const MainPage = () => {
       onCreateDirectory={createDirectory}
       onDeleteDirectory={deleteDirectory}
       onCopy={copy}
+      onCut={cut}
       canUpload={() => true}
       fileSizeLimit={fileSizeLimit}
+      config={{
+        showHiddenItems: false,
+        directoryDisplayName: "folder",
+        fileDisplayName: "file",
+      }}
     />
   );
 };

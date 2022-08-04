@@ -67,13 +67,20 @@ const ContextMenu = ({
     setSortField,
     sortOrder,
     setSortOrder,
-    setClipboardItem,
     setClipboardItemPath,
+    setClipboardMode,
     currentPath,
   } = useContext(FileBrowserContext);
 
   const copy = () => {
     setClipboardItemPath(item.path);
+    setClipboardMode("copy");
+    onClose();
+  };
+
+  const cut = () => {
+    setClipboardItemPath(item.path);
+    setClipboardMode("cut");
     onClose();
   };
 
@@ -230,19 +237,13 @@ const ContextMenu = ({
         {mode === "directory" && (
           <>
             <li>
-              <button
-                onClick={() => copy()}
-                className="list-button flex items-center"
-              >
+              <button onClick={copy} className="list-button flex items-center">
                 <Copy size={13} />
                 <p>Copy</p>
               </button>
             </li>
             <li>
-              <button
-                onClick={() => onClose()}
-                className="list-button flex items-center"
-              >
+              <button onClick={cut} className="list-button flex items-center">
                 <Scissors size={13} />
                 <p>Cut</p>
               </button>
@@ -288,19 +289,13 @@ const ContextMenu = ({
         {mode === "file" && (
           <>
             <li>
-              <button
-                onClick={() => copy()}
-                className="list-button flex items-center"
-              >
+              <button onClick={copy} className="list-button flex items-center">
                 <Copy size={13} />
                 <p>Copy</p>
               </button>
             </li>
             <li>
-              <button
-                onClick={() => onClose()}
-                className="list-button flex items-center"
-              >
+              <button onClick={cut} className="list-button flex items-center">
                 <Scissors size={13} />
                 <p>Cut</p>
               </button>

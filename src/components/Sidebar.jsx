@@ -23,7 +23,7 @@ const SidebarItem = ({
   onBrowse,
   onVisibleDescendantsChange,
 }) => {
-  const { refreshInfo } = useContext(FileBrowserContext);
+  const { refreshPaths } = useContext(FileBrowserContext);
   const [childrenItems, setChildrenItems] = useState([]);
   const [isExpanded, setIsExpanded] = useState(false);
 
@@ -49,8 +49,8 @@ const SidebarItem = ({
   );
 
   useEffect(() => {
-    if (item.path === refreshInfo.path) getChildrenItems(item);
-  }, [item, refreshInfo]);
+    if (refreshPaths.includes(item.path)) getChildrenItems(item);
+  }, [item, refreshPaths]);
 
   useEffect(() => {
     if (!isVisible) return;
@@ -142,7 +142,7 @@ const SidebarItem = ({
 
 const Sidebar = ({ onNavigate, onPreview, onContextMenu, onBrowse }) => {
   const [rootItems, setRootItems] = useState([]);
-  const { refreshInfo } = useContext(FileBrowserContext);
+  const { refreshPaths } = useContext(FileBrowserContext);
 
   const getRootItems = useCallback(
     async () => setRootItems(await onBrowse("/")),
@@ -152,8 +152,8 @@ const Sidebar = ({ onNavigate, onPreview, onContextMenu, onBrowse }) => {
   useEffect(() => void getRootItems(), [getRootItems]);
 
   useEffect(() => {
-    if (refreshInfo.path === "/") getRootItems();
-  }, [getRootItems, refreshInfo]);
+    if (refreshPaths.includes("/")) getRootItems();
+  }, [getRootItems, refreshPaths]);
 
   return (
     <div className="py-5 px-3 overflow-y-auto h-full">

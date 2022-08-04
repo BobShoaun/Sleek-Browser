@@ -31,12 +31,13 @@ const FileBrowser = ({
   onDeleteDirectory,
   fileSizeLimit,
   onCopy,
+  onCut,
 }) => {
   // navigation
   const [currentPath, setCurrentPath] = useState("/");
   const [currentItems, setCurrentItems] = useState([]);
   const [rootItems, setRootItems] = useState([]);
-  const [refreshInfo, setRefreshInfo] = useState({ path: "/" });
+  const [refreshPaths, setRefreshPaths] = useState([]);
 
   // history
   const navigate = useNavigate();
@@ -80,8 +81,8 @@ const FileBrowser = ({
   const [toastMessage, setToastMessage] = useState("");
 
   // clipboard
-  const [clipboardItem, setClipboardItem] = useState(null);
   const [clipboardItemPath, setClipboardItemPath] = useState("");
+  const [clipboardMode, setClipboardMode] = useState("copy"); // copy | cut
 
   useEffect(() => {
     localStorage.setItem("view", view);
@@ -138,7 +139,6 @@ const FileBrowser = ({
 
   const refresh = () => {
     _navigate(currentPath);
-    if (currentPath === "/") loadRoot();
   };
 
   // load root path for sidebar, without navigating to it
@@ -168,7 +168,7 @@ const FileBrowser = ({
   const createDirectory = async name => {
     await onCreateDirectory(path.join(currentPath, name));
     refresh();
-    setRefreshInfo({ path: currentPath });
+    setRefreshPaths([currentPath]);
     setShowNewFolder(false);
 
     // const file = new File([], name); // empty file for creating directory
@@ -181,7 +181,7 @@ const FileBrowser = ({
   const deleteFile = async _path => {
     await onDeleteFile(_path);
     refresh();
-    setRefreshInfo({ path: path.dirname(_path) });
+    setRefreshPaths([path.dirname(_path)]);
     setDetailsOpen(false);
   };
 
@@ -197,7 +197,7 @@ const FileBrowser = ({
     await onDeleteDirectory(_path);
     const parentDirPath = path.dirname(_path);
     _navigate(parentDirPath);
-    setRefreshInfo({ path: parentDirPath });
+    setRefreshPaths([parentDirPath]);
 
     // basicly deleting file within folder with same name.
     // const fileName = path.basename(_path);
@@ -253,8 +253,16 @@ const FileBrowser = ({
   };
 
   const pasteClipboard = destinationDirectoryPath => {
-    onCopy(clipboardItemPath, destinationDirectoryPath);
-    setRefreshInfo({ path: destinationDirectoryPath });
+    if (clipboardMode === "cut") {
+      onCut(clipboardItemPath, destinationDirectoryPath);
+      setRefreshPaths([
+        path.dirname(clipboardItemPath),
+        destinationDirectoryPath,
+      ]);
+    } else {
+      onCopy(clipboardItemPath, destinationDirectoryPath);
+      setRefreshPaths([destinationDirectoryPath]);
+    }
   };
 
   // sidebar resizing, TODO: extract into hook
@@ -323,10 +331,9 @@ const FileBrowser = ({
         setSearchQuery,
         theme,
         setTheme,
-        refreshInfo,
-        clipboardItem,
-        setClipboardItem,
+        refreshPaths,
         setClipboardItemPath,
+        setClipboardMode,
       }}
     >
       <main
