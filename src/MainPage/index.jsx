@@ -15,8 +15,7 @@ const MainPage = () => {
    * @returns
    */
   const getItems = async _path => {
-    const i = items.filter(item => path.dirname(item.path) === _path);
-    return i;
+    return items.filter(item => path.dirname(item.path) === _path);
   };
 
   const uploadFile = async (file, path) => {};
@@ -27,28 +26,30 @@ const MainPage = () => {
 
   const downloadFile = async file => {};
 
-  const createFolder = async _path => {
+  const createDirectory = async _path => {
     items.push({
       path: _path,
       isDirectory: true,
     });
   };
 
-  const deleteFolder = async _path => {
+  const deleteDirectory = async _path => {
+    const childrenItems = await getItems(_path);
+    for (const childItem of childrenItems) {
+      if (childItem.isDirectory) deleteDirectory(childItem.path);
+      else deleteFile(childItem.path);
+    }
     items = items.filter(item => item.path !== _path);
-
-    // const index = items.findIndex(item => item.path === _path);
-    // items.splice(index, 1);
   };
 
   return (
     <FileBrowser
       onBrowse={getItems}
       onUpload={uploadFile}
-      onDelete={deleteFile}
+      onDeleteFile={deleteFile}
       onDownload={downloadFile}
-      onCreateFolder={createFolder}
-      onDeleteFolder={deleteFolder}
+      onCreateDirectory={createDirectory}
+      onDeleteDirectory={deleteDirectory}
       homePath="/"
       canUpload={() => true}
       fileSizeLimit={fileSizeLimit}

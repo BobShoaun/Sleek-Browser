@@ -24,20 +24,18 @@ export const FileBrowserContext = createContext();
 const FileBrowser = ({
   onBrowse,
   onUpload,
-  onDelete,
-  homePath,
+  onDeleteFile,
   canUpload,
   onDownload,
-  onCreateFolder,
-  onDeleteFolder,
+  onCreateDirectory,
+  onDeleteDirectory,
   fileSizeLimit,
 }) => {
   // navigation
   const [currentPath, setCurrentPath] = useState("/");
   const [currentItems, setCurrentItems] = useState([]);
   const [rootItems, setRootItems] = useState([]);
-  const [refreshSignal, setRefreshSignal] = useState(false);
-  const [refreshPath, setRefreshPath] = useState("/");
+  const [refreshInfo, setRefreshInfo] = useState({ path: "/" });
 
   // history
   const navigate = useNavigate();
@@ -162,10 +160,10 @@ const FileBrowser = ({
     refresh();
   };
 
-  const uploadNewFolder = async name => {
-    await onCreateFolder(path.join(currentPath, name));
+  const createDirectory = async name => {
+    await onCreateDirectory(path.join(currentPath, name));
     refresh();
-    setRefreshPath(currentPath);
+    setRefreshInfo({ path: currentPath });
     setShowNewFolder(false);
 
     // const file = new File([], name); // empty file for creating directory
@@ -176,13 +174,13 @@ const FileBrowser = ({
   };
 
   const deleteFile = async _path => {
-    await onDelete(_path);
+    await onDeleteFile(_path);
     refresh();
-    setRefreshPath(path.dirname(_path));
+    setRefreshInfo({ path: path.dirname(_path) });
     setDetailsOpen(false);
   };
 
-  const deleteFolder = async _path => {
+  const deleteDirectory = async _path => {
     // check if folder is empty
     // const items = await onBrowse(_path);
     // if (items.length > 0) {
@@ -191,10 +189,10 @@ const FileBrowser = ({
     //   return;
     // }
 
-    await onDeleteFolder(_path);
-    const parentDirectory = path.dirname(_path);
-    _navigate(parentDirectory);
-    setRefreshPath(parentDirectory);
+    await onDeleteDirectory(_path);
+    const parentDirPath = path.dirname(_path);
+    _navigate(parentDirPath);
+    setRefreshInfo({ path: parentDirPath });
 
     // basicly deleting file within folder with same name.
     // const fileName = path.basename(_path);
@@ -315,8 +313,7 @@ const FileBrowser = ({
         setSearchQuery,
         theme,
         setTheme,
-        refreshSignal,
-        refreshPath,
+        refreshInfo,
       }}
     >
       <main
@@ -355,7 +352,7 @@ const FileBrowser = ({
           onDownload={onDownload}
           onToast={message => (setToastMessage(message), setToastOpen(true))}
           onDeleteFile={() => setDeletingFile(ctItem)}
-          onDeleteFolder={deleteFolder}
+          onDeleteFolder={deleteDirectory}
           canUpload={canUpload(currentPath)}
           onUpload={() => setShowUploadModal(true)}
           onNewFolder={() => setShowNewFolder(true)}
@@ -417,14 +414,14 @@ const FileBrowser = ({
           {!currentItems ? (
             <NotFound />
           ) : currentItems.length <= 0 && !showNewFolder ? (
-            <Empty onDelete={() => deleteFolder(currentPath)} />
+            <Empty onDelete={() => deleteDirectory(currentPath)} />
           ) : view === "grid" ? (
             <GridView
               currentItems={filteredItems}
               showNewFolder={showNewFolder}
               onNavigate={_navigate}
               onPreview={file => (setPreviewFile(file), setDetailsOpen(true))}
-              onCreateFolder={uploadNewFolder}
+              onCreateFolder={createDirectory}
               onContextMenu={openContextMenu}
               onCopyUrl={copyUrl}
             />
@@ -433,7 +430,7 @@ const FileBrowser = ({
               showNewFolder={showNewFolder}
               onNavigate={_navigate}
               onPreview={file => (setPreviewFile(file), setDetailsOpen(true))}
-              onCreateFolder={uploadNewFolder}
+              onCreateFolder={createDirectory}
               onContextMenu={openContextMenu}
               onCopyUrl={copyUrl}
             />
