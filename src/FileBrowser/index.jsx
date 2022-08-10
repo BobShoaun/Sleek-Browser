@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback, createContext, useRef } from "react";
-import path from "path";
+import path from "path-browserify";
 import "./index.css";
 import UploadFileModal from "../components/UploadFileModal";
 import ConfirmDeleteModal from "../components/ConfirmDeleteModal";

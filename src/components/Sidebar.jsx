@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef, useContext } from "react";
+import { useState, useEffect, useRef, useContext } from "react";
 import { getIconFromExtension } from "../helpers";
 import {
   Archive,
@@ -9,7 +9,7 @@ import {
   Clock,
   Trash2,
 } from "react-feather";
-import path from "path";
+import path from "path-browserify";
 import { FileBrowserContext } from "../FileBrowser";
 
 const showHiddenFiles = false;
@@ -43,10 +43,8 @@ const SidebarItem = ({
     ? Folder
     : getIconFromExtension(path.extname(item.path));
 
-  const getChildrenItems = useCallback(
-    async item => setChildrenItems(await onBrowse(item.path)),
-    [setChildrenItems, onBrowse]
-  );
+  const getChildrenItems = async item =>
+    setChildrenItems(await onBrowse(item.path));
 
   useEffect(() => {
     if (refreshPaths.includes(item.path)) getChildrenItems(item);
@@ -144,16 +142,12 @@ const Sidebar = ({ onNavigate, onPreview, onContextMenu, onBrowse }) => {
   const [rootItems, setRootItems] = useState([]);
   const { refreshPaths } = useContext(FileBrowserContext);
 
-  const getRootItems = useCallback(
-    async () => setRootItems(await onBrowse("/")),
-    []
-  );
+  const getRootItems = async () => setRootItems(await onBrowse("/"));
 
-  useEffect(() => void getRootItems(), [getRootItems]);
-
+  useEffect(() => void getRootItems(), []);
   useEffect(() => {
     if (refreshPaths.includes("/")) getRootItems();
-  }, [getRootItems, refreshPaths]);
+  }, [refreshPaths]);
 
   return (
     <div className="py-5 px-3 overflow-y-auto h-full">

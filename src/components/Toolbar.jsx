@@ -14,7 +14,7 @@ import {
   X,
 } from "react-feather";
 import { Fragment, useState, useRef, useContext } from "react";
-import path from "path";
+import path from "path-browserify";
 import "./toolbar.css";
 import { FileBrowserContext } from "../FileBrowser";
 import RadioButton from "./RadioButton";

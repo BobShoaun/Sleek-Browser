@@ -1,7 +1,7 @@
 import { useRef, useState, useContext } from "react";
 import { Folder } from "react-feather";
 import { getIconFromExtension } from "../helpers";
-import path from "path";
+import path from "path-browserify";
 
 const GridView = ({
   currentItems,

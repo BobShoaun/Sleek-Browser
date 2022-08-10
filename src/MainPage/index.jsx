@@ -1,5 +1,5 @@
 import FileBrowser from "../FileBrowser";
-import path from "path";
+import path from "path-browserify";
 import { items as _items } from "./files";
 
 let items = _items;
@@ -14,6 +14,7 @@ const MainPage = () => {
    * @returns
    */
   const getItems = async _path => {
+    console.log("getting items");
     return items.filter(item => path.dirname(item.path) === _path);
   };
 

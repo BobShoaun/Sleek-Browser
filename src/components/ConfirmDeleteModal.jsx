@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import path from "path";
+import path from "path-browserify";
 import { getIconFromExtension } from "../helpers";
 import "./modal.css";
 

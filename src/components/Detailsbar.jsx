@@ -1,7 +1,7 @@
 import moment from "moment";
 import { X, Download, Copy, Trash2 } from "react-feather";
 import { formatBytes } from "../helpers";
-import path from "path";
+import path from "path-browserify";
 import { getIconFromExtension, isImage, isVideo } from "../helpers";
 import { useMemo, useState, useEffect } from "react";
 

@@ -1,7 +1,7 @@
 import { useRef, useState, useContext } from "react";
 import { formatBytes } from "../helpers";
 import moment from "moment";
-import path from "path";
+import path from "path-browserify";
 import { Folder, ChevronUp, ChevronDown } from "react-feather";
 import { getIconFromExtension } from "../helpers";
 import { FileBrowserContext } from "../FileBrowser";

@@ -3,7 +3,7 @@ import { useDropzone } from "react-dropzone";
 import { Upload, X, Loader } from "react-feather";
 import { getIconFromExtension } from "../helpers";
 import { formatBytes } from "../helpers";
-import path from "path";
+import path from "path-browserify";
 import "./modal.css";
 
 const UploadFileModal = ({ onClose, onUpload, fileSizeLimit }) => {
