@@ -12,7 +12,7 @@ export default defineConfig({
   },
   build: {
     lib: {
-      entry: path.resolve("./src/index.js"),
+      entry: path.resolve("./src/library/index.js"),
       name: "Sleek Browser",
       formats: ["es", "umd"],
       fileName: format => `index.${format}.js`,
