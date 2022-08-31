@@ -3,6 +3,23 @@
   "private": true,
   "version": "1.0.0",
   "type": "module",
+  "files": [
+    "dist/index.es.js",
+    "dist/index.umd.js",
+    "dist/style.css"
+  ],
+  "main": "./dist/index.umd.js",
+  "module": "./dist/index.es.js",
+  "exports": {
+    ".": {
+      "import": "./dist/index.es.js",
+      "require": "./dist/index.umd.js"
+    },
+    "./style.css": {
+      "import": "./dist/style.css",
+      "require": "./dist/style.css"
+    }
+  },
   "scripts": {
     "dev": "vite",
     "build": "vite build",

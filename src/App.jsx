@@ -1,7 +1,6 @@
 import { Route, Routes, BrowserRouter } from "react-router-dom";
 import { createContext } from "react";
 import MainPage from "./MainPage";
-import "./index.css";
 
 export const AppContext = createContext();
 

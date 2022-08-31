@@ -1,6 +1,5 @@
 import { useEffect, useState, useCallback, createContext, useRef } from "react";
 import path from "path-browserify";
-import "./index.css";
 import UploadFileModal from "../components/UploadFileModal";
 import ConfirmDeleteModal from "../components/ConfirmDeleteModal";
 import Toolbar from "../components/Toolbar";
@@ -8,7 +7,6 @@ import Sidebar from "../components/Sidebar";
 import Detailsbar from "../components/Detailsbar";
 import ListView from "../components/ListView";
 import GridView from "../components/GridView";
-import { useNavigate, useLocation } from "react-router";
 import moment from "moment";
 import Fuse from "fuse.js";
 import Footer from "../components/Footer";
@@ -18,6 +16,7 @@ import Toast from "../components/Toast";
 import NotFound from "../components/NotFound";
 import Empty from "../components/Empty";
 import ImageModal from "../components/ImageModal";
+import "./index.css";
 
 export const FileBrowserContext = createContext();
 
@@ -32,16 +31,15 @@ const FileBrowser = ({
   fileSizeLimit,
   onCopy,
   onCut,
+  initialPath = "/",
+  onRouterNavigate,
 }) => {
   // navigation
   const [currentPath, setCurrentPath] = useState("/");
   const [currentItems, setCurrentItems] = useState([]);
-  const [rootItems, setRootItems] = useState([]);
   const [refreshPaths, setRefreshPaths] = useState([]);
 
   // history
-  const navigate = useNavigate();
-  const location = useLocation();
   const [backwardPaths, setBackwardPaths] = useState([]); // stack
   const [forwardPaths, setForwardPaths] = useState([]); // stack
   const [cachedPathItems, setCachedPathItems] = useState(new Map());
@@ -132,7 +130,7 @@ const FileBrowser = ({
       setBackwardPaths(paths => [...paths, currentPath]); // push to back stack
       setForwardPaths([]);
     }
-    navigate(path);
+    onRouterNavigate?.(path);
     setSearchQuery(""); // clear search box
     return await _setCurrentPath(path);
   };
@@ -141,19 +139,8 @@ const FileBrowser = ({
     _navigate(currentPath);
   };
 
-  // load root path for sidebar, without navigating to it
-  const loadRoot = async () => {
-    const rootItems = await onBrowse("/");
-    setRootItems(rootItems);
-  };
-
-  const initialize = useCallback(async () => {
-    await loadRoot();
-    _navigate(location.pathname || "/"); // if no path specified, go to homepath
-  }, [navigate]);
-
   useEffect(() => {
-    initialize();
+    _navigate(initialPath);
   }, []);
 
   const uploadFiles = async files => {

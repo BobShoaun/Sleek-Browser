@@ -15,7 +15,7 @@ export default defineConfig({
       entry: path.resolve("./src/index.js"),
       name: "Sleek Browser",
       formats: ["es", "umd"],
-      fileName: format => `sleek-browser.${format}.js`,
+      fileName: format => `index.${format}.js`,
     },
     rollupOptions: {
       external: ["react", "react-dom"],

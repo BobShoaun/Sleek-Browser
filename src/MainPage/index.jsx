@@ -1,10 +1,14 @@
 import FileBrowser from "../FileBrowser";
 import path from "path-browserify";
 import { items as _items } from "./files";
+import { useNavigate, useLocation } from "react-router";
 
 let items = _items;
 
 const MainPage = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
+
   const fileSizeLimit = 25_000_000; // 25 MB
   // const [items, setItems] = useState(_items);
 
@@ -14,7 +18,7 @@ const MainPage = () => {
    * @returns
    */
   const getItems = async _path => {
-    console.log("getting items");
+    console.log("getting items", _path);
     return items.filter(item => path.dirname(item.path) === _path);
   };
 
@@ -78,6 +82,8 @@ const MainPage = () => {
         directoryDisplayName: "folder",
         fileDisplayName: "file",
       }}
+      initialPath={location.pathname}
+      onRouterNavigate={navigate}
     />
   );
 };
